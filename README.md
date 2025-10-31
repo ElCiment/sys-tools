@@ -121,14 +121,14 @@ Outils-Système est une suite complète d'outils d'administration permettant de 
 
 ### Mode production (exe)
 
-1. **Télécharger** l'exécutable `Outils-Systeme.exe`
+1. **Télécharger** l'exécutable `Sys-Tools.exe`
 2. **Double-cliquer** pour lancer
 3. Aucune installation requise
 
 ## 🚀 Utilisation
 
 ### Démarrage
-- Lancez `Outils-Systeme.exe` ou `python main.py`
+- Lancez `Sys-Tools.exe` ou `python main.py`
 - Entrez le mot de passe d'accès
 - L'interface principale s'affiche
 
@@ -225,7 +225,7 @@ pyinstaller --onefile --noconsole --clean \
     main.py
 ```
 
-L'exécutable sera créé dans `dist/Outils-Systeme.exe`
+L'exécutable sera créé dans `dist/Sys-Tools.exe`
 
 **Options importantes** :
 - `--clean` : Vide le cache PyInstaller (obligatoire pour voir les changements de version)
