@@ -1,0 +1,154 @@
+═══════════════════════════════════════════════════════════════════════
+  GUIDE DE COMPILATION AVEC PYINSTALLER
+═══════════════════════════════════════════════════════════════════════
+
+📦 COMMANDE COMPLÈTE DE COMPILATION
+───────────────────────────────────────────────────────────────────────
+
+pyinstaller --onefile --noconsole --clean ^
+    --icon=mainicon2.ico ^
+    --add-data "version.txt;." ^
+    --add-data "update_config.txt;." ^
+    --add-data "mainicon2.ico;." ^
+    --add-data "assets;assets" ^
+    --hidden-import=customtkinter ^
+    --hidden-import=PIL ^
+    --hidden-import=psutil ^
+    --hidden-import=pyserial ^
+    --name "Outils-Systeme" ^
+    main.py
+
+⚠️  IMPORTANT : Ajouts obligatoires
+───────────────────────────────────────────────────────────────────────
+
+1. --clean
+   → Nettoie le cache PyInstaller
+   → OBLIGATOIRE pour voir les changements de version.txt
+
+2. --add-data "update_config.txt;."
+   → Inclut le fichier de configuration des URLs
+   → Nouveau fichier, il faut l'ajouter !
+
+
+═══════════════════════════════════════════════════════════════════════
+  PROBLÈME : L'EXE AFFICHE L'ANCIENNE VERSION
+═══════════════════════════════════════════════════════════════════════
+
+🔧 SOLUTION 1 : Ajouter --clean (RECOMMANDÉ)
+───────────────────────────────────────────────────────────────────────
+
+PyInstaller garde un cache. Ajoutez --clean pour le forcer à tout 
+recompiler avec les nouveaux fichiers.
+
+Exemple :
+pyinstaller --onefile --noconsole --clean --icon=mainicon2.ico ...
+
+
+🔧 SOLUTION 2 : Supprimer manuellement le cache
+───────────────────────────────────────────────────────────────────────
+
+Supprimez ces dossiers avant de compiler :
+  - build/
+  - dist/
+  - __pycache__/
+  - Outils-Systeme.spec
+
+Puis recompilez normalement.
+
+
+🔧 SOLUTION 3 : Vérifier version.txt
+───────────────────────────────────────────────────────────────────────
+
+Assurez-vous que version.txt contient bien le bon numéro :
+  1. Ouvrez version.txt
+  2. Vérifiez le contenu (ex: 2.1.2)
+  3. Sauvegardez (Ctrl+S)
+  4. Recompilez avec --clean
+
+
+═══════════════════════════════════════════════════════════════════════
+  COMMANDE COMPLÈTE (COPIER-COLLER)
+═══════════════════════════════════════════════════════════════════════
+
+Windows (une seule ligne) :
+pyinstaller --onefile --noconsole --clean --icon=mainicon2.ico --add-data "version.txt;." --add-data "update_config.txt;." --add-data "mainicon2.ico;." --add-data "assets;assets" --hidden-import=customtkinter --hidden-import=PIL --hidden-import=psutil --hidden-import=pyserial --name "Outils-Systeme" main.py
+
+Windows (multi-lignes avec ^) :
+pyinstaller --onefile --noconsole --clean ^
+    --icon=mainicon2.ico ^
+    --add-data "version.txt;." ^
+    --add-data "update_config.txt;." ^
+    --add-data "mainicon2.ico;." ^
+    --add-data "assets;assets" ^
+    --hidden-import=customtkinter ^
+    --hidden-import=PIL ^
+    --hidden-import=psutil ^
+    --hidden-import=pyserial ^
+    --name "Outils-Systeme" ^
+    main.py
+
+
+═══════════════════════════════════════════════════════════════════════
+  CHECKLIST AVANT DE COMPILER
+═══════════════════════════════════════════════════════════════════════
+
+□ version.txt contient le bon numéro (ex: 2.1.2)
+□ update_config.txt contient les bonnes URLs
+□ L'option --clean est présente dans la commande
+□ --add-data "update_config.txt;." est présent
+□ Tous les fichiers requis existent :
+  □ mainicon2.ico
+  □ version.txt
+  □ update_config.txt
+  □ assets/ (dossier avec images, etc.)
+
+
+═══════════════════════════════════════════════════════════════════════
+  APRÈS LA COMPILATION
+═══════════════════════════════════════════════════════════════════════
+
+1. L'exe se trouve dans : dist/Outils-Systeme.exe
+
+2. C'EST TOUT ! ✅
+   Les fichiers version.txt et update_config.txt sont EMBEDÉS dans l'exe.
+   AUCUN fichier externe n'est nécessaire !
+
+3. Testez l'exe :
+   - Double-cliquez sur Outils-Systeme.exe
+   - Vérifiez que la version affichée est correcte (2.1.2)
+   - Testez le bouton "Mise à jour"
+
+
+═══════════════════════════════════════════════════════════════════════
+  DISTRIBUTION AUX UTILISATEURS
+═══════════════════════════════════════════════════════════════════════
+
+Donnez aux utilisateurs :
+  ✅ Outils-Systeme.exe
+
+C'EST TOUT ! Un seul fichier .exe suffit.
+Pas besoin de copier version.txt ou update_config.txt !
+
+
+═══════════════════════════════════════════════════════════════════════
+  QUESTIONS FRÉQUENTES
+═══════════════════════════════════════════════════════════════════════
+
+Q : L'exe affiche toujours l'ancienne version
+R : Utilisez --clean pour vider le cache PyInstaller
+
+Q : Erreur "version.txt not found"
+R : Vérifiez que --add-data "version.txt;." est présent dans la commande
+   et utilisez --clean pour forcer la recompilation
+
+Q : Dois-je copier version.txt à côté de l'exe ?
+R : NON ! Les fichiers sont embedés dans l'exe. Un seul fichier suffit.
+
+Q : Comment mettre à jour la version ?
+R : Modifiez version.txt dans le projet source, puis recompilez avec --clean
+
+Q : Puis-je distribuer uniquement l'exe ?
+R : OUI ! Tout est embedé dans l'exe (version.txt et update_config.txt)
+
+Q : Comment changer les URLs de téléchargement ?
+R : Modifiez update_config.txt dans le projet source, puis recompilez

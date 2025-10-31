@@ -187,65 +187,37 @@ def install_update(update_file: str) -> bool:
         bool: True si le lancement a réussi
     """
     try:
-        # Créer un script batch pour remplacer l'exe actuel
         current_exe = os.path.abspath(subprocess.sys.executable)
         exe_name = os.path.basename(current_exe)
+        exe_dir = os.path.dirname(current_exe)
         
         # Si on est dans un .exe compilé
         if getattr(subprocess.sys, 'frozen', False):
-            # Script batch qui :
-            # 1. Attend que l'app se ferme
-            # 2. Tue le processus s'il reste actif  
-            # 3. Remplace l'exe depuis le fichier temporaire
-            # 4. Vérifie que la copie a réussi
-            # 5. Lance le nouveau exe depuis son emplacement FINAL
-            # 6. Nettoie les fichiers temporaires
+            # Script batch avec attente prolongée pour fermeture complète
             batch_script = f"""@echo off
-chcp 65001 >nul
-echo.
-echo ════════════════════════════════════════
-echo   Mise a jour en cours...
-echo ════════════════════════════════════════
-echo.
-echo Etape 1/5: Fermeture de l'application...
-timeout /t 3 /nobreak >nul
+echo Mise a jour en cours...
+timeout /t 5 /nobreak >nul
 taskkill /F /IM "{exe_name}" >nul 2>&1
-timeout /t 2 /nobreak >nul
-
-echo Etape 2/5: Remplacement du fichier...
+timeout /t 3 /nobreak >nul
+:waitloop
+tasklist /FI "IMAGENAME eq {exe_name}" 2>NUL | find /I /N "{exe_name}">NUL
+if "%ERRORLEVEL%"=="0" (
+    timeout /t 1 /nobreak >nul
+    goto waitloop
+)
 copy /Y "{update_file}" "{current_exe}" >nul
-if errorlevel 1 (
-    echo.
-    echo [ERREUR] Impossible de copier le fichier
-    echo Source: {update_file}
-    echo Destination: {current_exe}
-    pause
-    exit /b 1
-)
-
-echo Etape 3/5: Verification...
-if not exist "{current_exe}" (
-    echo [ERREUR] Le fichier n'existe pas apres copie
-    pause
-    exit /b 1
-)
-
-echo Etape 4/5: Nettoyage...
 del "{update_file}" >nul 2>&1
-timeout /t 1 /nobreak >nul
-
-echo Etape 5/5: Demarrage de la nouvelle version...
-start "" /d "{os.path.dirname(current_exe)}" "{current_exe}"
 timeout /t 2 /nobreak >nul
-del "%~f0"
+cd /d "{exe_dir}"
+start "" "{exe_name}"
 """
+            
             batch_file = os.path.join(tempfile.gettempdir(), "update_systools.bat")
-            with open(batch_file, 'w', encoding='utf-8') as f:
+            with open(batch_file, 'w') as f:
                 f.write(batch_script)
             
-            # Lancer le script batch VISIBLE pour debug
-            # L'utilisateur verra la progression de la mise à jour
-            subprocess.Popen(['cmd', '/c', batch_file])
+            # Lancer le batch
+            subprocess.Popen(batch_file, shell=True)
             return True
         else:
             # En mode développement, juste ouvrir le fichier téléchargé

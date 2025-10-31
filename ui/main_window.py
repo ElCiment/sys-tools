@@ -216,13 +216,13 @@ class ToolsApp(ctk.CTk):
         # Frame pour version + bouton mise à jour (côte à côte)
         version_frame = ctk.CTkFrame(header, fg_color="transparent")
         version_frame.grid(row=1, column=1, sticky="w")
-        
+
         # Version (chargée depuis le serveur)
         self.version_label = ctk.CTkLabel(version_frame,
                                text=f"Version {LOCAL_VERSION}",
                                font=ctk.CTkFont(size=12))
         self.version_label.pack(side="left", padx=(0, 10))
-        
+
         # Bouton vérifier mises à jour (à côté de la version)
         update_btn = ctk.CTkButton(version_frame,
                                    text="🔄 Mise à jour",
@@ -233,7 +233,7 @@ class ToolsApp(ctk.CTk):
                                    hover_color="#0369a1",
                                    font=ctk.CTkFont(size=10))
         update_btn.pack(side="left")
-        
+
         # Lancer la vérification automatique au démarrage
         threading.Thread(target=self._check_updates_auto, daemon=True).start()
 
@@ -1168,23 +1168,23 @@ class ToolsApp(ctk.CTk):
                       command=self._list_users,
                       fg_color="#16a34a",
                       hover_color="#15803d").pack(pady=10)
-        
+
         # === SECTION AUTO-LOGIN ===
         autologin_frame = ctk.CTkFrame(f, fg_color="#2b2b2b")
         autologin_frame.pack(fill="x", pady=15, padx=10)
-        
+
         ctk.CTkLabel(autologin_frame,
                      text="🔐 Connexion automatique Windows",
                      font=ctk.CTkFont(size=13, weight="bold")).pack(anchor="w",
                                                                     padx=10,
                                                                     pady=(10, 5))
-        
+
         # Afficher l'utilisateur auto-login actuel
         self.autologin_status_label = ctk.CTkLabel(autologin_frame,
                                                    text="⏳ Chargement...",
                                                    font=ctk.CTkFont(size=11))
         self.autologin_status_label.pack(anchor="w", padx=10, pady=(0, 5))
-        
+
         # Bouton pour vérifier l'utilisateur auto-login
         ctk.CTkButton(autologin_frame,
                       text="🔍 Vérifier utilisateur auto-login",
@@ -1192,11 +1192,11 @@ class ToolsApp(ctk.CTk):
                       command=self._check_autologin,
                       fg_color="#0284c7",
                       hover_color="#0369a1").pack(anchor="w", padx=10, pady=5)
-        
+
         # Formulaire pour configurer l'auto-login
         config_frame = ctk.CTkFrame(autologin_frame, fg_color="#1f2937")
         config_frame.pack(fill="x", padx=10, pady=10)
-        
+
         ctk.CTkLabel(config_frame,
                      text="Configurer la connexion automatique:",
                      font=ctk.CTkFont(size=11, weight="bold")).grid(row=0, column=0,
@@ -1204,18 +1204,18 @@ class ToolsApp(ctk.CTk):
                                                                     sticky="w",
                                                                     padx=10,
                                                                     pady=(8, 5))
-        
+
         if not hasattr(self, 'autologin_user_var'):
             self.autologin_user_var = tk.StringVar(value="")
             self.autologin_pass_var = tk.StringVar(value="")
-        
+
         ctk.CTkLabel(config_frame, text="Utilisateur:").grid(row=1, column=0,
                                                              sticky="w",
                                                              padx=10, pady=5)
         ctk.CTkEntry(config_frame,
                      textvariable=self.autologin_user_var,
                      width=200).grid(row=1, column=1, padx=10, pady=5)
-        
+
         ctk.CTkLabel(config_frame, text="Mot de passe:").grid(row=2, column=0,
                                                               sticky="w",
                                                               padx=10, pady=5)
@@ -1223,17 +1223,17 @@ class ToolsApp(ctk.CTk):
                      textvariable=self.autologin_pass_var,
                      width=200,
                      show="*").grid(row=2, column=1, padx=10, pady=5)
-        
+
         btn_row = ctk.CTkFrame(config_frame, fg_color="transparent")
         btn_row.grid(row=3, column=0, columnspan=2, pady=8)
-        
+
         ctk.CTkButton(btn_row,
                       text="✅ Activer auto-login",
                       width=140,
                       command=self._enable_autologin,
                       fg_color="#16a34a",
                       hover_color="#15803d").pack(side="left", padx=5)
-        
+
         ctk.CTkButton(btn_row,
                       text="❌ Désactiver auto-login",
                       width=140,
@@ -1272,7 +1272,7 @@ class ToolsApp(ctk.CTk):
                 self.log(f"❌ Erreur: {e}")
 
         threading.Thread(target=worker, daemon=True).start()
-    
+
     def _check_autologin(self):
         """Vérifie l'utilisateur configuré pour l'auto-login"""
         def worker():
@@ -1281,11 +1281,11 @@ class ToolsApp(ctk.CTk):
                 key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
                                     r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
                                     0, winreg.KEY_READ)
-                
+
                 try:
                     auto_enabled, _ = winreg.QueryValueEx(key, "AutoAdminLogon")
                     username, _ = winreg.QueryValueEx(key, "DefaultUserName")
-                    
+
                     if auto_enabled == "1":
                         status_text = f"✅ Auto-login ACTIVÉ pour: {username}"
                         color = "#10b981"
@@ -1299,92 +1299,92 @@ class ToolsApp(ctk.CTk):
                     status_text = "⚠️ Auto-login DÉSACTIVÉ (non configuré)"
                     color = "#f59e0b"
                     self.log("ℹ️ Auto-login non configuré")
-                
+
                 winreg.CloseKey(key)
-                
+
             except Exception as e:
                 status_text = f"❌ Erreur: {e}"
                 color = "#ef4444"
                 self.log(f"❌ Erreur vérification auto-login: {e}")
-            
+
             # Mettre à jour le label dans le thread principal
             self.after(0, lambda: self.autologin_status_label.configure(
                 text=status_text, text_color=color))
-        
+
         threading.Thread(target=worker, daemon=True).start()
-    
+
     def _enable_autologin(self):
         """Active l'auto-login Windows"""
         username = self.autologin_user_var.get().strip()
         password = self.autologin_pass_var.get().strip()
-        
+
         if not username:
             self.log("❌ Nom d'utilisateur requis")
             return
-        
+
         def worker():
             try:
                 import winreg
                 self.log(f"▶ Configuration auto-login pour: {username}")
-                
+
                 key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
                                     r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
                                     0, winreg.KEY_SET_VALUE)
-                
+
                 winreg.SetValueEx(key, "AutoAdminLogon", 0, winreg.REG_SZ, "1")
                 winreg.SetValueEx(key, "DefaultUserName", 0, winreg.REG_SZ, username)
                 if password:
                     winreg.SetValueEx(key, "DefaultPassword", 0, winreg.REG_SZ, password)
-                
+
                 winreg.CloseKey(key)
-                
+
                 self.log(f"✅ Auto-login activé pour: {username}")
                 self.log("⚠️ L'utilisateur se connectera automatiquement au prochain démarrage")
-                
+
                 # Mettre à jour le statut
                 self.after(0, lambda: self.autologin_status_label.configure(
                     text=f"✅ Auto-login ACTIVÉ pour: {username}",
                     text_color="#10b981"))
-                
+
             except Exception as e:
                 self.log(f"❌ Erreur activation auto-login: {e}")
                 self.log("⚠️ Nécessite les droits administrateur")
-        
+
         threading.Thread(target=worker, daemon=True).start()
-    
+
     def _disable_autologin(self):
         """Désactive l'auto-login Windows"""
         def worker():
             try:
                 import winreg
                 self.log("▶ Désactivation de l'auto-login...")
-                
+
                 key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
                                     r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
                                     0, winreg.KEY_SET_VALUE)
-                
+
                 winreg.SetValueEx(key, "AutoAdminLogon", 0, winreg.REG_SZ, "0")
-                
+
                 # Optionnel: supprimer le mot de passe stocké
                 try:
                     winreg.DeleteValue(key, "DefaultPassword")
                 except:
                     pass
-                
+
                 winreg.CloseKey(key)
-                
+
                 self.log("✅ Auto-login désactivé")
                 self.log("ℹ️ Windows demandera un mot de passe au prochain démarrage")
-                
+
                 # Mettre à jour le statut
                 self.after(0, lambda: self.autologin_status_label.configure(
                     text="⚠️ Auto-login DÉSACTIVÉ",
                     text_color="#f59e0b"))
-                
+
             except Exception as e:
                 self.log(f"❌ Erreur désactivation auto-login: {e}")
                 self.log("⚠️ Nécessite les droits administrateur")
-        
+
         threading.Thread(target=worker, daemon=True).start()
 
     def _update_remote_ids(self):
@@ -2299,7 +2299,7 @@ Get-NetAdapter | ForEach-Object {
                         variable=standard_vars['install_ninite']).pack(anchor="w",
                                                                        padx=8,
                                                                        pady=(6, 1))
-        
+
         # === OPTION 10: RÉTABLIR MENU CONTEXTUEL CLASSIQUE (Windows 11) ===
         standard_vars['restore_context_menu'] = tk.BooleanVar(value=True)
         ctk.CTkCheckBox(col1,
@@ -2618,7 +2618,7 @@ Get-NetAdapter | ForEach-Object {
                     if standard_vars['install_ninite'].get():
                         steps.append(
                             ("Installation Ninite + config VNC", lambda: self._install_ninite(log_msg)))
-                    
+
                     # Option 10: Rétablir menu contextuel classique
                     if standard_vars['restore_context_menu'].get():
                         steps.append(
@@ -4670,26 +4670,26 @@ $Shortcut.Save()
 
         except Exception as e:
             self.log(f"❌ Erreur: {e}")
-    
+
     # ==================== SYSTÈME DE MISE À JOUR ====================
-    
+
     def _check_updates_auto(self):
         """Vérification automatique des mises à jour au démarrage (discrète)"""
         try:
             time.sleep(2)  # Attendre que l'interface soit chargée
-            
+
             update_available, local_ver, remote_ver = check_for_updates()
-            
+
             if remote_ver:
                 # Mettre à jour le label de version
                 version_text = f"Version {remote_ver}"
                 if update_available:
                     version_text += " 🔴 Mise à jour disponible!"
-                
+
                 self.after(0, lambda: self.version_label.configure(
                     text=version_text,
                     text_color="#ef4444" if update_available else None))
-                
+
                 # Afficher notification dans la console
                 if update_available:
                     self.after(0, lambda: self.log(
@@ -4698,15 +4698,15 @@ $Shortcut.Save()
                         "   Cliquez sur '🔄 Vérifier mises à jour' pour télécharger"))
         except Exception as e:
             print(f"Erreur vérification auto: {e}")
-    
+
     def _check_updates_manual(self):
         """Vérification manuelle des mises à jour (avec popup)"""
         self.log("🔍 Vérification des mises à jour...")
-        
+
         def worker():
             try:
                 update_available, local_ver, remote_ver = check_for_updates()
-                
+
                 if not remote_ver:
                     self.after(0, lambda: self.log(
                         "❌ Impossible de contacter le serveur de mises à jour"))
@@ -4715,7 +4715,7 @@ $Shortcut.Save()
                         "Impossible de vérifier les mises à jour.\n"
                         "Vérifiez votre connexion Internet."))
                     return
-                
+
                 if update_available:
                     self.after(0, lambda: self.log(
                         f"✅ Mise à jour disponible: v{remote_ver} (actuelle: v{local_ver})"))
@@ -4726,30 +4726,30 @@ $Shortcut.Save()
                     self.after(0, lambda: messagebox.showinfo(
                         "Aucune mise à jour",
                         f"Vous utilisez déjà la dernière version:\nVersion {local_ver}"))
-                    
+
             except Exception as e:
                 self.after(0, lambda: self.log(f"❌ Erreur: {e}"))
                 self.after(0, lambda: messagebox.showerror("Erreur", str(e)))
-        
+
         threading.Thread(target=worker, daemon=True).start()
-    
+
     def _show_update_dialog(self, current_version, new_version):
         """Affiche le dialogue de mise à jour"""
         from tkinter import Toplevel
-        
+
         dialog = Toplevel(self)
         dialog.title("Mise à jour disponible")
         dialog.geometry("550x600")
         dialog.resizable(False, False)
         dialog.transient(self)
         dialog.grab_set()
-        
+
         # Centrer la fenêtre
         dialog.update_idletasks()
         x = (dialog.winfo_screenwidth() // 2) - (550 // 2)
         y = (dialog.winfo_screenheight() // 2) - (350 // 2)
         dialog.geometry(f"+{x}+{y}")
-        
+
         # Icône
         try:
             base_path = get_base_path()
@@ -4758,45 +4758,45 @@ $Shortcut.Save()
                 dialog.iconbitmap(icon_path)
         except:
             pass
-        
+
         # Contenu
         main_frame = ctk.CTkFrame(dialog, fg_color="#1e1e1e")
         main_frame.pack(fill="both", expand=True, padx=20, pady=20)
-        
+
         # Icône de mise à jour
         ctk.CTkLabel(main_frame,
                      text="🔄",
                      font=ctk.CTkFont(size=48)).pack(pady=(10, 5))
-        
+
         # Titre
         ctk.CTkLabel(main_frame,
                      text="Mise à jour disponible !",
                      font=ctk.CTkFont(size=18, weight="bold")).pack(pady=5)
-        
+
         # Versions
         version_frame = ctk.CTkFrame(main_frame, fg_color="#2b2b2b")
         version_frame.pack(fill="x", padx=20, pady=15)
-        
+
         ctk.CTkLabel(version_frame,
                      text=f"Version actuelle: {current_version}",
                      font=ctk.CTkFont(size=13),
                      text_color="#9ca3af").pack(pady=5)
-        
+
         ctk.CTkLabel(version_frame,
                      text=f"Nouvelle version: {new_version}",
                      font=ctk.CTkFont(size=14, weight="bold"),
                      text_color="#10b981").pack(pady=5)
-        
+
         # Message
         ctk.CTkLabel(main_frame,
                      text="Voulez-vous télécharger et installer\ncette mise à jour maintenant ?",
                      font=ctk.CTkFont(size=12),
                      text_color="#d1d5db").pack(pady=10)
-        
+
         # Boutons
         btn_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
         btn_frame.pack(pady=10)
-        
+
         ctk.CTkButton(btn_frame,
                       text="✅ Télécharger et installer",
                       width=200,
@@ -4806,7 +4806,7 @@ $Shortcut.Save()
                       fg_color="#16a34a",
                       hover_color="#15803d",
                       font=ctk.CTkFont(size=13, weight="bold")).pack(side="left", padx=5)
-        
+
         ctk.CTkButton(btn_frame,
                       text="❌ Plus tard",
                       width=120,
@@ -4815,14 +4815,14 @@ $Shortcut.Save()
                       fg_color="#6b7280",
                       hover_color="#4b5563",
                       font=ctk.CTkFont(size=13)).pack(side="left", padx=5)
-    
+
     def _download_and_install_update(self):
         """Télécharge et installe la mise à jour"""
         self.log("=" * 60)
         self.log("🔄 TÉLÉCHARGEMENT DE LA MISE À JOUR")
         self.log("=" * 60)
         self.log("▶ Téléchargement en cours depuis kpi-tech.ca...")
-        
+
         # Créer une popup de progression
         progress_dialog = tk.Toplevel(self)
         progress_dialog.title("Téléchargement en cours...")
@@ -4830,13 +4830,13 @@ $Shortcut.Save()
         progress_dialog.resizable(False, False)
         progress_dialog.transient(self)
         progress_dialog.grab_set()
-        
+
         # Centrer
         progress_dialog.update_idletasks()
         x = (progress_dialog.winfo_screenwidth() // 2) - (450 // 2)
         y = (progress_dialog.winfo_screenheight() // 2) - (200 // 2)
         progress_dialog.geometry(f"+{x}+{y}")
-        
+
         # Icône
         try:
             base_path = get_base_path()
@@ -4845,41 +4845,41 @@ $Shortcut.Save()
                 progress_dialog.iconbitmap(icon_path)
         except:
             pass
-        
+
         frame = ctk.CTkFrame(progress_dialog, fg_color="#1e1e1e")
         frame.pack(fill="both", expand=True, padx=20, pady=20)
-        
+
         status_label = ctk.CTkLabel(frame,
                                     text="Téléchargement en cours...",
                                     font=ctk.CTkFont(size=14, weight="bold"))
         status_label.pack(pady=10)
-        
+
         progress_bar = ctk.CTkProgressBar(frame, width=380)
         progress_bar.pack(pady=10)
         progress_bar.set(0)
-        
+
         size_label = ctk.CTkLabel(frame,
                                   text="0 MB / 0 MB",
                                   font=ctk.CTkFont(size=11),
                                   text_color="#9ca3af")
         size_label.pack(pady=5)
-        
+
         def update_progress(downloaded, total):
             """Mise à jour de la barre de progression"""
             if total > 0:
                 percent = min(downloaded / total, 1.0)
                 progress_bar.set(percent)
-                
+
                 dl_mb = downloaded / (1024 * 1024)
                 total_mb = total / (1024 * 1024)
                 size_label.configure(text=f"{dl_mb:.1f} MB / {total_mb:.1f} MB")
                 self.log(f"  Téléchargé: {dl_mb:.1f} MB / {total_mb:.1f} MB ({percent*100:.0f}%)")
-        
+
         def worker():
             try:
                 # Téléchargement
                 update_file = download_update(update_progress)
-                
+
                 if not update_file:
                     self.after(0, lambda: progress_dialog.destroy())
                     self.after(0, lambda: self.log("❌ Échec du téléchargement"))
@@ -4887,38 +4887,39 @@ $Shortcut.Save()
                         "Erreur",
                         "Le téléchargement a échoué.\nVeuillez réessayer."))
                     return
-                
+
                 self.after(0, lambda: status_label.configure(
                     text="✅ Téléchargement terminé !"))
                 self.after(0, lambda: self.log("✅ Téléchargement terminé"))
-                
+
                 time.sleep(1)
-                
+
                 # Installation
                 self.after(0, lambda: status_label.configure(
                     text="Installation en cours..."))
                 self.after(0, lambda: self.log("▶ Lancement de l'installation..."))
-                
+
                 time.sleep(1)
-                
+
                 if install_update(update_file):
                     self.after(0, lambda: self.log("✅ Mise à jour lancée"))
                     self.after(0, lambda: self.log("⚠️  L'application va redémarrer..."))
                     self.after(0, lambda: progress_dialog.destroy())
-                    
-                    # Fermer l'application
-                    time.sleep(1)
-                    self.after(0, self.quit)
+
+                    # Fermer IMMÉDIATEMENT l'application
+                    import sys
+                    time.sleep(0.5)
+                    sys.exit(0)
                 else:
                     self.after(0, lambda: progress_dialog.destroy())
                     self.after(0, lambda: self.log("❌ Échec de l'installation"))
                     self.after(0, lambda: messagebox.showerror(
                         "Erreur",
                         "L'installation a échoué.\nVeuillez installer manuellement."))
-                    
+
             except Exception as e:
                 self.after(0, lambda: progress_dialog.destroy())
                 self.after(0, lambda: self.log(f"❌ Erreur: {e}"))
                 self.after(0, lambda: messagebox.showerror("Erreur", str(e)))
-        
+
         threading.Thread(target=worker, daemon=True).start()
