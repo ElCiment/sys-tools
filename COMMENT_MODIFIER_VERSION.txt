@@ -1,0 +1,200 @@
+═══════════════════════════════════════════════════════════════════════
+  GUIDE DE CONFIGURATION - MISES À JOUR AUTOMATIQUES
+═══════════════════════════════════════════════════════════════════════
+
+📝 MÉTHODE SIMPLE : Modifier le fichier version.txt
+───────────────────────────────────────────────────────────────────────
+
+1. Ouvrez le fichier : version.txt
+   (situé à la racine du projet)
+
+2. Modifiez le numéro de version (format: x.y.z)
+   Exemple :
+   ┌─────────────┐
+   │ 2.1.1       │  ← Ancien numéro
+   └─────────────┘
+   
+   ┌─────────────┐
+   │ 2.2.0       │  ← Nouveau numéro
+   └─────────────┘
+
+3. Sauvegardez le fichier
+
+4. Recompilez l'application avec PyInstaller/Nuitka (avec --clean)
+
+5. Distribuez le nouvel exe ✅
+
+⚠️  IMPORTANT : Les fichiers version.txt et update_config.txt sont 
+    EMBEDÉS dans l'exe. Vous n'avez PAS besoin de les copier à côté
+    de l'exe. Un seul fichier .exe suffit !
+
+
+═══════════════════════════════════════════════════════════════════════
+  CHANGER LES URLS DE TÉLÉCHARGEMENT (Google Drive, etc.)
+═══════════════════════════════════════════════════════════════════════
+
+📝 MÉTHODE SIMPLE : Modifier le fichier update_config.txt
+───────────────────────────────────────────────────────────────────────
+
+1. Ouvrez le fichier : update_config.txt
+   (situé à la racine du projet)
+
+2. Modifiez les URLs selon vos besoins :
+
+   VERSION_URL=https://votre-url.com/version.txt
+   DOWNLOAD_URL=https://votre-url.com/Sys-Tools.exe
+
+3. Sauvegardez le fichier
+
+4. Redémarrez l'application ou recompilez
+
+
+🔗 UTILISER GOOGLE DRIVE
+───────────────────────────────────────────────────────────────────────
+
+Étape 1 : Uploader vos fichiers sur Google Drive
+  - version.txt (contenant le numéro, ex: 2.1.2)
+  - Sys-Tools.exe (votre application)
+
+Étape 2 : Partager les fichiers
+  - Clic droit sur le fichier → Partager
+  - "Toute personne disposant du lien"
+  - Copier le lien
+
+Étape 3 : Récupérer l'ID du fichier
+  URL Google Drive normale :
+  https://drive.google.com/file/d/1ABC123XYZ456/view?usp=sharing
+                                ↑ Copiez cet ID ↑
+
+Étape 4 : Créer l'URL directe
+  Format : https://drive.google.com/uc?export=download&id=FILE_ID
+  
+  Exemple :
+  https://drive.google.com/uc?export=download&id=1ABC123XYZ456
+
+Étape 5 : Modifier update_config.txt
+  VERSION_URL=https://drive.google.com/uc?export=download&id=1ABC123XYZ456
+  DOWNLOAD_URL=https://drive.google.com/uc?export=download&id=1DEF789UVW012
+
+
+🌐 AUTRES SERVICES COMPATIBLES
+───────────────────────────────────────────────────────────────────────
+
+Dropbox :
+  - Remplacez "www.dropbox.com" par "dl.dropboxusercontent.com"
+  - Exemple : https://dl.dropboxusercontent.com/s/abc123/version.txt
+
+OneDrive :
+  - Utilisez le lien "Télécharger" direct
+
+GitHub :
+  - Utilisez Raw : https://raw.githubusercontent.com/user/repo/main/version.txt
+
+Hébergement web classique :
+  - N'importe quelle URL directe fonctionne
+
+
+═══════════════════════════════════════════════════════════════════════
+  SYSTÈME DE MISE À JOUR AUTOMATIQUE
+═══════════════════════════════════════════════════════════════════════
+
+📤 PUBLIER UNE NOUVELLE VERSION SUR LE SERVEUR
+───────────────────────────────────────────────────────────────────────
+
+Pour que vos utilisateurs reçoivent la mise à jour automatiquement :
+
+1. Modifiez version.txt LOCAL (ex: 2.2.0)
+
+2. Compilez votre application en .exe
+
+3. Uploadez le .exe sur votre serveur :
+   → kpi-tech.ca/launcher/files/systools/Sys-Tools.exe
+
+4. Modifiez le fichier version.txt SUR LE SERVEUR :
+   → kpi-tech.ca/launcher/files/systools/version.txt
+   → Contenu : 2.2.0
+
+5. Les utilisateurs seront automatiquement notifiés ! 🔔
+
+
+═══════════════════════════════════════════════════════════════════════
+  DÉTAILS TECHNIQUES (OPTIONNEL)
+═══════════════════════════════════════════════════════════════════════
+
+📁 FICHIERS CONCERNÉS
+───────────────────────────────────────────────────────────────────────
+
+1. version.txt (racine du projet)
+   → Numéro de version local de l'application
+   → Lu automatiquement au démarrage par update_manager.py
+
+2. utils/update_manager.py
+   → Fonction _get_local_version() : lit version.txt
+   → Variable LOCAL_VERSION : stocke la version actuelle
+   → Fonction check_for_updates() : compare avec serveur
+
+3. ui/main_window.py
+   → Ligne ~224-227 : Affiche le numéro de version dans le header
+   → Ligne ~240 : Vérification automatique au démarrage
+
+
+🔧 SI VOUS MODIFIEZ LE CODE DIRECTEMENT (SANS version.txt)
+───────────────────────────────────────────────────────────────────────
+
+Fichier : utils/update_manager.py
+Ligne   : ~40-42
+
+Modifiez le fallback :
+
+    except Exception:
+        return "2.1.1"  ← Changez ce numéro ici
+        
+⚠️  NON RECOMMANDÉ : Utilisez plutôt version.txt
+
+
+═══════════════════════════════════════════════════════════════════════
+  FORMAT DU NUMÉRO DE VERSION
+═══════════════════════════════════════════════════════════════════════
+
+Format standard : MAJEUR.MINEUR.PATCH
+
+Exemples valides :
+  ✅ 2.1.1
+  ✅ 3.0.0
+  ✅ 2.2.5
+  ✅ 10.3.12
+
+Exemples invalides :
+  ❌ 2.1       (manque le patch)
+  ❌ v2.1.1    (pas de "v" au début)
+  ❌ 2.1.1-beta (pas de suffixe)
+
+
+═══════════════════════════════════════════════════════════════════════
+  QUESTIONS FRÉQUENTES
+═══════════════════════════════════════════════════════════════════════
+
+Q : Où se trouve le fichier version.txt ?
+R : À la racine du projet, au même niveau que main.py
+
+Q : Faut-il recompiler après avoir modifié version.txt ?
+R : OUI, version.txt doit être inclus dans l'exe compilé
+
+Q : Comment tester le système de mise à jour ?
+R : 1) Compilez avec version 2.1.1
+   2) Uploadez version 2.2.0 sur le serveur
+   3) Lancez l'exe v2.1.1
+   4) Il détectera la mise à jour disponible
+
+Q : Le bouton "Mise à jour" ne fonctionne pas
+R : Vérifiez que les URLs sont accessibles :
+   - https://kpi-tech.ca/launcher/files/systools/version.txt
+   - https://kpi-tech.ca/launcher/files/systools/Sys-Tools.exe
+
+
+═══════════════════════════════════════════════════════════════════════
+  POUR PLUS D'INFORMATIONS
+═══════════════════════════════════════════════════════════════════════
+
+Consultez : README_COMPLET.md
+Section    : "🔄 Système de mise à jour automatique"

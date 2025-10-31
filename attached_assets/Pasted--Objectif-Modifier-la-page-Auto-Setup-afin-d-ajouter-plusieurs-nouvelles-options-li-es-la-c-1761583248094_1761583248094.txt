@@ -1,0 +1,64 @@
+🧩 Objectif
+
+Modifier la page “Auto Setup” afin d’ajouter plusieurs nouvelles options liées à la configuration du poste standard.
+La page devra être maximisée au chargement, car il y aura plus d’options à afficher.
+
+✅ Changements à apporter
+1. Interface (UI)
+
+Ajouter des cases à cocher pour les options 1 à 6 et pour l’option 8.
+
+L’option 7 utilise déjà un menu déroulant existant, il faut simplement faire fonctionner la modification associée.
+
+Si la case de l’option 8 est cochée, le champ pour définir les heures doit apparaître ou devenir actif.
+
+⚙️ Liste des options à inclure
+Option 1 – Désactiver le contrôle de compte utilisateur (UAC)
+
+Configurer le paramètre “User Account Control Settings” sur Never notify.
+
+Option 2 – Autoriser “Veloce Backoffice” dans le pare-feu
+
+Dans Panneau de configuration → Pare-feu Windows Defender → Autoriser une application via le pare-feu,
+cocher “Veloce Backoffice” à la fois pour Public et Privé.
+Le chemin par défaut est : C:\Veloce\VelSrv
+
+
+Option 3 – Désactiver la mise en veille des cartes réseau
+
+Pour toutes les cartes réseau disponibles sur le poste (si l’option est disponible),
+décocher “Allow the computer to turn off this device to save power” dans leurs propriétés.
+
+Option 4 – Fuseau horaire et synchronisation
+
+Vérifier que le fuseau horaire est America/Toronto,
+puis forcer une synchronisation de l’heure et de la date.
+
+Option 5 – Performances système
+
+Dans Paramètres avancés du système → Performances,
+sélectionner “Ajuster pour obtenir les meilleures performances”.
+
+Option 6 – Options d’alimentation
+
+Sélectionner le mode le plus performant,
+puis appliquer les réglages suivants :
+
+Aucune mise en veille
+
+Écran jamais éteint
+
+Turn off hard disk after = 0 minutes
+
+Option 7 – Partage réseau protégé par mot de passe
+
+L’option est déjà présente.
+Il faut s’assurer que la modification fonctionne réellement dans Windows.
+(Actuellement, dans l’interface graphique Windows, le paramètre reste sur “ON”.
+Il faut le forcer à OFF.)
+
+Option 8 – Heures actives du système
+
+Permettre d’afficher et modifier les “heures actives” du système
+(paramètre lié aux Windows Updates).
+Le champ doit être visible uniquement si la case est cochée.

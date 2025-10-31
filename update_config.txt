@@ -1,0 +1,41 @@
+# Configuration des URLs pour les mises à jour
+# Modifiez ces URLs selon vos besoins
+
+# URL du fichier version.txt (contient le numéro de version)
+VERSION_URL=https://kpi-tech.ca/launcher/files/systools/version.txt
+
+# URL du fichier exécutable (.exe) à télécharger
+DOWNLOAD_URL=https://github.com/ElCiment/sys-tools/releases/download/sys-tools/Sys-Tools.exe
+
+# ═══════════════════════════════════════════════════════════════════════
+# EXEMPLES D'URLS GOOGLE DRIVE DIRECT
+# ═══════════════════════════════════════════════════════════════════════
+#
+# Pour obtenir un lien Google Drive direct :
+# 1. Téléchargez votre fichier sur Google Drive
+# 2. Clic droit → Partager → "Obtenir le lien" → "Toute personne disposant du lien"
+# 3. Copiez l'ID du fichier depuis l'URL (exemple ci-dessous)
+#
+# URL Google Drive normale :
+# https://drive.google.com/file/d/1ABC123XYZ456/view?usp=sharing
+#                              ↑ Copiez cet ID
+#
+# URL DIRECTE à utiliser (remplacez FILE_ID par l'ID) :
+# https://drive.google.com/uc?export=download&id=FILE_ID
+#
+# Exemples :
+# VERSION_URL=https://drive.google.com/uc?export=download&id=1ABC123XYZ456
+# DOWNLOAD_URL=https://drive.google.com/uc?export=download&id=1DEF789UVW012
+#
+# ═══════════════════════════════════════════════════════════════════════
+# AUTRES SERVICES COMPATIBLES
+# ═══════════════════════════════════════════════════════════════════════
+#
+# Dropbox : Remplacez "www.dropbox.com" par "dl.dropboxusercontent.com"
+# Exemple : https://dl.dropboxusercontent.com/s/abc123/version.txt
+#
+# OneDrive : Utilisez le lien "Télécharger" direct
+#
+# GitHub Raw : https://raw.githubusercontent.com/user/repo/main/version.txt
+#
+# ═══════════════════════════════════════════════════════════════════════

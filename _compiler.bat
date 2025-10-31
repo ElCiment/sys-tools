@@ -1,0 +1,2 @@
+pyinstaller --onefile --noconsole --clean --icon=mainicon2.ico --add-data "version.txt;." --add-data "update_config.txt;." --add-data "mainicon2.ico;." --add-data "assets;assets" --hidden-import=customtkinter --hidden-import=PIL --hidden-import=psutil --hidden-import=pyserial --name "Sys-Tools" main.py
+pause

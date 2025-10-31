@@ -1,0 +1,33 @@
+NOTES DE VERSION - Outils Système
+=====================================
+
+Version 1.6.3
+-------------
+Date: 2025-10-25
+
+NOUVEAUTÉS:
+• Architecture modulaire refactorisée (utils/, services/, ui/)
+• Réduction de 63% du code (3267 → ~1200 lignes)
+• Amélioration de la maintenabilité et documentation
+
+FONCTIONNALITÉS:
+• Auto Setup: Configuration automatique (Poste Standard, Poste Serveur, Station Veloce)
+• Commandes personnalisées avec support PsExec distant
+• Configuration réseau avancée (DHCP/Statique, détection automatique)
+• Gestion utilisateurs Windows complète avec auto-login
+• Tweaks Windows: Taskbar, notifications, menu contextuel Win11
+• Test d'impression ESC/P (TCP/IP et COM)
+• Création raccourcis VELBO/VELSRV
+• Affichage TeamViewer/AnyDesk IDs
+
+CORRECTIONS:
+• Optimisation des performances
+• Amélioration de la gestion d'erreurs
+• Meilleure compatibilité Windows 10/11
+
+NOTES TECHNIQUES:
+• Nécessite Windows 10/11
+• Droits administrateur requis pour certaines fonctions
+• Dépendances: customtkinter, psutil, pyserial, Pillow
+
+Pour plus d'informations: https://kpi-tech.ca
