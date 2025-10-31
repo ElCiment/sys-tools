@@ -27,7 +27,7 @@ def _load_update_urls():
         
         # Valeurs par défaut
         version_url = "https://kpi-tech.ca/launcher/files/systools/version.txt"
-        download_url = "https://kpi-tech.ca/launcher/files/systools/Sys-Tools.exe"
+        download_url = "https://github.com/ElCiment/sys-tools/releases/download/sys-tools/Sys-Tools.exe"
         
         if os.path.exists(config_file):
             with open(config_file, 'r', encoding='utf-8') as f:
@@ -48,7 +48,7 @@ def _load_update_urls():
     except Exception:
         # En cas d'erreur, utiliser les URLs par défaut
         return ("https://kpi-tech.ca/launcher/files/systools/version.txt",
-                "https://kpi-tech.ca/launcher/files/systools/Sys-Tools.exe")
+                "https://github.com/ElCiment/sys-tools/releases/download/sys-tools/Sys-Tools.exe")
 
 VERSION_URL, DOWNLOAD_URL = _load_update_urls()
 
@@ -194,37 +194,58 @@ def install_update(update_file: str) -> bool:
         # Si on est dans un .exe compilé
         if getattr(subprocess.sys, 'frozen', False):
             # Script batch qui :
-            # 1. Attend 2 secondes que l'app se ferme
-            # 2. Tue le processus s'il reste actif
-            # 3. Remplace l'exe
-            # 4. Lance le nouveau exe
-            # 5. Se supprime lui-même
+            # 1. Attend que l'app se ferme
+            # 2. Tue le processus s'il reste actif  
+            # 3. Remplace l'exe depuis le fichier temporaire
+            # 4. Vérifie que la copie a réussi
+            # 5. Lance le nouveau exe depuis son emplacement FINAL
+            # 6. Nettoie les fichiers temporaires
             batch_script = f"""@echo off
 chcp 65001 >nul
-echo ╔════════════════════════════════════════╗
-echo ║   Mise à jour en cours...              ║
-echo ╚════════════════════════════════════════╝
-timeout /t 2 /nobreak >nul
+echo.
+echo ════════════════════════════════════════
+echo   Mise a jour en cours...
+echo ════════════════════════════════════════
+echo.
+echo Etape 1/5: Fermeture de l'application...
+timeout /t 3 /nobreak >nul
 taskkill /F /IM "{exe_name}" >nul 2>&1
-timeout /t 1 /nobreak >nul
+timeout /t 2 /nobreak >nul
+
+echo Etape 2/5: Remplacement du fichier...
 copy /Y "{update_file}" "{current_exe}" >nul
 if errorlevel 1 (
-    echo Erreur lors de la copie du fichier
+    echo.
+    echo [ERREUR] Impossible de copier le fichier
+    echo Source: {update_file}
+    echo Destination: {current_exe}
     pause
     exit /b 1
 )
+
+echo Etape 3/5: Verification...
+if not exist "{current_exe}" (
+    echo [ERREUR] Le fichier n'existe pas apres copie
+    pause
+    exit /b 1
+)
+
+echo Etape 4/5: Nettoyage...
 del "{update_file}" >nul 2>&1
 timeout /t 1 /nobreak >nul
-start "" "{current_exe}"
+
+echo Etape 5/5: Demarrage de la nouvelle version...
+start "" /d "{os.path.dirname(current_exe)}" "{current_exe}"
+timeout /t 2 /nobreak >nul
 del "%~f0"
 """
             batch_file = os.path.join(tempfile.gettempdir(), "update_systools.bat")
             with open(batch_file, 'w', encoding='utf-8') as f:
                 f.write(batch_script)
             
-            # Lancer le script batch en mode caché
-            subprocess.Popen(['cmd', '/c', batch_file], 
-                           creationflags=subprocess.CREATE_NO_WINDOW)
+            # Lancer le script batch VISIBLE pour debug
+            # L'utilisateur verra la progression de la mise à jour
+            subprocess.Popen(['cmd', '/c', batch_file])
             return True
         else:
             # En mode développement, juste ouvrir le fichier téléchargé
