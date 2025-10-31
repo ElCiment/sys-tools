@@ -39,14 +39,11 @@ Outils-Système est une suite complète d'outils d'administration permettant de 
 - Setup complet de stations Veloce en un clic
 - Configuration automatique de :
   - Nom du PC selon les standards
-  - Utilisateur avec auto-login
-  - Configuration IP fixe
   - Raccourcis bureau (VELBO/VELSRV)
   - Fond d'écran personnalisé
   - Tweaks Windows standards
 - Vérification de connectivité réseau
-- Journalisation détaillée de chaque étape
-
+- Journalisation détaillée de chaque étape   et plus....
 ### 🌐 Réseau
 
 #### Diagnostics réseau
@@ -58,11 +55,6 @@ Outils-Système est une suite complète d'outils d'administration permettant de 
   - Configuration DNS
   - Ouverture directe des propriétés IPv4 Windows
 
-#### Outils réseau avancés
-- Test de ping
-- Trace route
-- Affichage des connexions actives
-- Diagnostic de connectivité serveur
 
 ### 🖨️ Imprimantes
 
@@ -148,15 +140,6 @@ Outils-Système est une suite complète d'outils d'administration permettant de 
 3. Cliquez sur "💳 Station Veloce"
 4. Suivez la progression dans la console
 
-#### Configuration IP
-1. Sélectionnez "Réseau" → "Configuration IP"
-2. Choisissez la carte réseau
-3. Activez "IP Fixe" et renseignez :
-   - Adresse IP
-   - Masque de sous-réseau
-   - Passerelle par défaut
-   - DNS
-4. Cliquez sur "Appliquer"
 
 #### Test d'imprimante
 1. Sélectionnez "🖨️ Imprimantes" → "Test impression"
