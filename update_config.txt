@@ -1,12 +1,29 @@
-# Configuration des URLs pour les mises à jour
-# Modifiez ces URLs selon vos besoins
+
 
 # URL du fichier version.txt (contient le numéro de version)
 VERSION_URL=https://kpi-tech.ca/launcher/files/systools/version.txt
 
 # URL du fichier exécutable (.exe) à télécharger
-DOWNLOAD_URL=https://github.com/ElCiment/sys-tools/releases/download/sys-tools/Sys-Tools.exe
+DOWNLOAD_URL=https://github.com/ElCiment/sys-tools/releases/download/Version/Sys-Tools.exe
 
+
+# URL du fichier notesversion.txt (contient les nouveautés)
+NOTES_URL=https://kpi-tech.ca/launcher/files/systools/notesversion.txt
+
+
+
+
+
+
+
+
+
+
+
+###############################################
+###############################################
+###############################################
+###############################################
 # ═══════════════════════════════════════════════════════════════════════
 # EXEMPLES D'URLS GOOGLE DRIVE DIRECT
 # ═══════════════════════════════════════════════════════════════════════

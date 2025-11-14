@@ -147,29 +147,31 @@ def check_for_updates() -> Tuple[bool, Optional[str], Optional[str]]:
     return update_available, LOCAL_VERSION, remote_version
 
 
+
+
 def download_update(progress_callback=None) -> Optional[str]:
     """
-    Télécharge la mise à jour depuis le serveur
-    
-    Args:
-        progress_callback: Fonction appelée avec (bytes_downloaded, total_bytes)
-    
-    Returns:
-        str: Chemin du fichier téléchargé ou None si erreur
+    Télécharge la mise à jour depuis le serveur plus rapidement
     """
     try:
-        # Créer un fichier temporaire
         temp_dir = tempfile.gettempdir()
         temp_file = os.path.join(temp_dir, "Sys-Tools-Update.exe")
         
-        # Télécharger avec barre de progression
-        def reporthook(block_num, block_size, total_size):
-            if progress_callback and total_size > 0:
-                downloaded = block_num * block_size
-                progress_callback(downloaded, total_size)
-        
-        urllib.request.urlretrieve(DOWNLOAD_URL, temp_file, reporthook)
-        
+        with urllib.request.urlopen(DOWNLOAD_URL) as response:
+            total_size = int(response.getheader('Content-Length', 0))
+            downloaded = 0
+            chunk_size = 1024 * 1024 * 5  # 5 Mo par chunk pour accélérer
+
+            with open(temp_file, "wb") as f:
+                while True:
+                    chunk = response.read(chunk_size)
+                    if not chunk:
+                        break
+                    f.write(chunk)
+                    downloaded += len(chunk)
+                    if progress_callback and total_size > 0:
+                        progress_callback(downloaded, total_size)
+
         return temp_file
     except Exception as e:
         print(f"Erreur téléchargement: {e}")
@@ -179,51 +181,40 @@ def download_update(progress_callback=None) -> Optional[str]:
 def install_update(update_file: str) -> bool:
     """
     Lance l'installation de la mise à jour et ferme l'application actuelle
-    
-    Args:
-        update_file: Chemin du fichier d'installation
-    
-    Returns:
-        bool: True si le lancement a réussi
     """
     try:
         current_exe = os.path.abspath(subprocess.sys.executable)
         exe_name = os.path.basename(current_exe)
         exe_dir = os.path.dirname(current_exe)
-        
-        # Si on est dans un .exe compilé
+
         if getattr(subprocess.sys, 'frozen', False):
-            # Script batch avec attente prolongée pour fermeture complète
             batch_script = f"""@echo off
 echo Mise a jour en cours...
+start "" "{update_file}"
 timeout /t 5 /nobreak >nul
 taskkill /F /IM "{exe_name}" >nul 2>&1
-timeout /t 3 /nobreak >nul
 :waitloop
-tasklist /FI "IMAGENAME eq {exe_name}" 2>NUL | find /I /N "{exe_name}">NUL
+tasklist /FI "IMAGENAME eq {exe_name}" 2>NUL | find /I "{exe_name}" >nul
 if "%ERRORLEVEL%"=="0" (
     timeout /t 1 /nobreak >nul
     goto waitloop
 )
 copy /Y "{update_file}" "{current_exe}" >nul
 del "{update_file}" >nul 2>&1
-timeout /t 2 /nobreak >nul
-cd /d "{exe_dir}"
-start "" "{exe_name}"
 """
-            
+
             batch_file = os.path.join(tempfile.gettempdir(), "update_systools.bat")
             with open(batch_file, 'w') as f:
                 f.write(batch_script)
-            
-            # Lancer le batch
+
+            # Lancer le batch et quitter l'application actuelle
             subprocess.Popen(batch_file, shell=True)
             return True
         else:
-            # En mode développement, juste ouvrir le fichier téléchargé
+            # Mode dev
             os.startfile(update_file)
             return True
-            
+
     except Exception as e:
         print(f"Erreur installation: {e}")
         return False

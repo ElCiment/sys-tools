@@ -1397,39 +1397,56 @@ class ToolsApp(ctk.CTk):
             0, lambda: self.ad_label.configure(text=f"AnyDesk ID: {ad_id}"))
 
     def show_release_notes(self):
-        """Affiche les notes de version dans une fenêtre popup"""
+        """Ouvre une petite fenêtre pour afficher les notes de version"""
+        import requests
         from tkinter import Toplevel
-        from tkinter import scrolledtext
 
         base_path = get_base_path()
-        notes_path = os.path.join(base_path, "config", "releasesnotes.txt")
+        
+        # Récupérer la config
+        config_path = os.path.join(base_path, "update_config.txt")
+        config = {}
+        if os.path.exists(config_path):
+            with open(config_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#"):
+                        key, value = line.split("=", 1)
+                        config[key.strip()] = value.strip()
 
-        if not os.path.exists(notes_path):
-            self.log(f"❌ Fichier releasesnotes.txt introuvable dans config/")
-            messagebox.showwarning(
-                "Fichier introuvable",
-                "Le fichier releasesnotes.txt est manquant dans config/")
-            return
+        # Récupérer le texte depuis l'URL
+        notes_text = ""
+        url = config.get("NOTES_URL", "")
+        if url:
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
+                notes_text = response.text.strip()
+            except Exception as e:
+                print(f"Impossible de récupérer les notes de version depuis l'URL : {e}")
 
-        win = Toplevel(self)
-        win.title("Release Notes - Outils Système")
-        win.geometry("700x500")
-        win.resizable(True, True)
-        win.grab_set()
+        # Si échec ou vide, lire le fichier local
+        notes_path = os.path.join(base_path, "notesversion.txt")
+        if not notes_text and os.path.exists(notes_path):
+            try:
+                with open(notes_path, "r", encoding="utf-8") as f:
+                    notes_text = f.read().strip()
+            except Exception as e:
+                print(f"Impossible de lire notesversion.txt local : {e}")
 
-        txt_area = scrolledtext.ScrolledText(win,
-                                             wrap="word",
-                                             font=("Consolas", 11))
-        txt_area.pack(expand=True, fill="both", padx=10, pady=10)
+        # Fenêtre popup
+        popup = Toplevel(self)
+        popup.title("Notes de version")
+        popup.geometry("600x500")
+        popup.resizable(True, True)
 
-        try:
-            with open(notes_path, "r", encoding="utf-8") as f:
-                txt_area.insert("1.0", f.read())
-        except Exception as e:
-            txt_area.insert("1.0",
-                            f"Erreur lors de la lecture du fichier: {e}")
+        # Texte
+        import customtkinter as ctk
+        text_widget = ctk.CTkTextbox(popup, width=480, height=380)
+        text_widget.pack(padx=10, pady=10, fill="both", expand=True)
+        text_widget.insert("0.0", notes_text)
+        text_widget.configure(state="disabled")  # rendre lecture seule
 
-        txt_area.configure(state="disabled")
 
     def build_auto_setup_options(self, parent):
         """Page Auto Setup avec 3 boutons qui ouvrent des fenêtres dédiées"""
@@ -1910,7 +1927,7 @@ Get-NetAdapter | ForEach-Object {
 
             log_fn(f"✓ Fichier ninite.exe trouvé: {ninite_path}")
             log_fn("  Lancement de l'installation...")
-            log_fn("  ⏳ Cela peut prendre plusieurs minutes (Notepad++, 7zip, Foxit, TightVNC)")
+            log_fn("  ⏳ Cela peut prendre plusieurs minutes (Notepad++, 7zip, Foxit, TightVNC, Teamviewer, Chrome)")
             log_fn("  ⏳ Veuillez patienter, ne pas fermer la fenêtre...")
 
             # Lancer ninite SANS paramètre (il est silencieux par défaut)
@@ -2104,18 +2121,25 @@ Get-NetAdapter | ForEach-Object {
         from tkinter import Toplevel
 
         # Créer la fenêtre
-        window = Toplevel(self)
+        window = ctk.CTkToplevel(self)
+
         window.title("Auto Setup - Config PC")
         window.geometry("1000x580")
         window.resizable(True, True)
         window.transient(self)
         window.grab_set()
 
+        window.overrideredirect(False)
+        window.attributes('-toolwindow', False)
+
         # Maximiser la fenêtre au chargement
         try:
             window.state('zoomed')  # Windows
         except:
             window.attributes('-zoomed', True)  # Linux
+
+
+
 
         # Frame principal
         main_frame = ctk.CTkFrame(window)
@@ -2295,7 +2319,7 @@ Get-NetAdapter | ForEach-Object {
         # === OPTION 9: INSTALLATION NINITE (Notepad++, 7zip, Foxit, TightVNC) ===
         standard_vars['install_ninite'] = tk.BooleanVar(value=True)
         ctk.CTkCheckBox(col1,
-                        text="✓ Installer Ninite (Notepad++, 7zip, Foxit, TightVNC, TeamViewer)",
+                        text="✓ Installer Ninite (Notepad++, 7zip, Foxit, TightVNC, TeamViewer, Chrome)",
                         variable=standard_vars['install_ninite']).pack(anchor="w",
                                                                        padx=8,
                                                                        pady=(6, 1))
@@ -2700,7 +2724,7 @@ Get-NetAdapter | ForEach-Object {
                       font=ctk.CTkFont(size=13, weight="bold"),
                       fg_color="#16a34a",
                       hover_color="#15803d",
-                      command=execute).pack(pady=10)
+                      command=execute).pack(pady=(0, 80), side="top")
 
     def _create_serveur_shortcuts(self, log_fn):
         """Crée les raccourcis VELBO/VELSRV et copie VELSRV au démarrage"""
@@ -4739,15 +4763,15 @@ $Shortcut.Save()
 
         dialog = Toplevel(self)
         dialog.title("Mise à jour disponible")
-        dialog.geometry("550x600")
-        dialog.resizable(False, False)
+        dialog.geometry("570x600")
+        dialog.resizable(True, True)
         dialog.transient(self)
         dialog.grab_set()
 
         # Centrer la fenêtre
         dialog.update_idletasks()
         x = (dialog.winfo_screenwidth() // 2) - (550 // 2)
-        y = (dialog.winfo_screenheight() // 2) - (350 // 2)
+        y = (dialog.winfo_screenheight() // 2) - (600 // 2)
         dialog.geometry(f"+{x}+{y}")
 
         # Icône
@@ -4773,7 +4797,7 @@ $Shortcut.Save()
                      text="Mise à jour disponible !",
                      font=ctk.CTkFont(size=18, weight="bold")).pack(pady=5)
 
-        # Versions
+        # Frame pour version + notes
         version_frame = ctk.CTkFrame(main_frame, fg_color="#2b2b2b")
         version_frame.pack(fill="x", padx=20, pady=15)
 
@@ -4787,13 +4811,27 @@ $Shortcut.Save()
                      font=ctk.CTkFont(size=14, weight="bold"),
                      text_color="#10b981").pack(pady=5)
 
-        # Message
-        ctk.CTkLabel(main_frame,
-                     text="Voulez-vous télécharger et installer\ncette mise à jour maintenant ?",
-                     font=ctk.CTkFont(size=12),
-                     text_color="#d1d5db").pack(pady=10)
-
-        # Boutons
+        # Charger notesversion
+        notes_text = ""
+        try:
+            config_path = os.path.join(base_path, "update_config.txt")
+            config = {}
+            with open(config_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#"):
+                        key, value = line.split("=", 1)
+                        config[key.strip()] = value.strip()
+            url = config.get("NOTES_URL", "")
+            if url:
+                import requests
+                response = requests.get(url)
+                response.raise_for_status()
+                notes_text = response.text.strip()
+        except Exception as e:
+            print(f"Impossible de récupérer les notes de version : {e}")
+            notes_text = "Aucune note disponible."
+        # Boutons principaux pour l'update
         btn_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
         btn_frame.pack(pady=10)
 
@@ -4801,8 +4839,7 @@ $Shortcut.Save()
                       text="✅ Télécharger et installer",
                       width=200,
                       height=35,
-                      command=lambda: [dialog.destroy(), 
-                                      self._download_and_install_update()],
+                      command=lambda: [dialog.destroy(), self._download_and_install_update()],
                       fg_color="#16a34a",
                       hover_color="#15803d",
                       font=ctk.CTkFont(size=13, weight="bold")).pack(side="left", padx=5)
@@ -4815,6 +4852,46 @@ $Shortcut.Save()
                       fg_color="#6b7280",
                       hover_color="#4b5563",
                       font=ctk.CTkFont(size=13)).pack(side="left", padx=5)
+
+        # Bouton pour afficher les nouveautés
+        def show_notes():
+            # Créer une nouvelle fenêtre popup
+            notes_window = ctk.CTkToplevel(dialog)
+            notes_window.title("Nouveautés")
+            notes_window.geometry("500x400")
+            notes_window.resizable(True, True)
+            notes_window.transient(dialog)
+            notes_window.grab_set()
+
+            # Centrer la fenêtre
+            notes_window.update_idletasks()
+            x = (notes_window.winfo_screenwidth() // 2) - (500 // 2)
+            y = (notes_window.winfo_screenheight() // 2) - (400 // 2)
+            notes_window.geometry(f"+{x}+{y}")
+
+            # Frame pour le texte
+            frame = ctk.CTkFrame(notes_window, fg_color="#1e1e1e")
+            frame.pack(fill="both", expand=True, padx=10, pady=10)
+
+            # Label pour afficher le texte avec wrap
+            ctk.CTkLabel(frame,
+                         text=notes_text,
+                         font=ctk.CTkFont(size=12),
+                         text_color="#fbbf24",
+                         justify="left",
+                         wraplength=480).pack(fill="both", expand=True, padx=5, pady=5)
+
+            # Bouton pour fermer
+            ctk.CTkButton(frame, text="Fermer", command=notes_window.destroy).pack(pady=(5,10))
+
+            # Désactiver le bouton principal après clic
+            show_button.configure(state="disabled")
+
+        show_button = ctk.CTkButton(version_frame, text="Afficher nouveautés", command=show_notes)
+        show_button.pack(pady=(5, 5))
+
+
+
 
     def _download_and_install_update(self):
         """Télécharge et installe la mise à jour"""

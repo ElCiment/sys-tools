@@ -60,7 +60,7 @@ def tweak_taskbar(log_fn):
         (r"Software\Microsoft\TabletTip\1.7", "TipbandDesiredVisibility", 1),
         
         # Petites icônes + ne pas combiner les boutons
-        (r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "TaskbarSmallIcons", 1),
+        #(r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "TaskbarSmallIcons", 1),
         (r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "TaskbarGlomLevel", 2),
     ]
     
