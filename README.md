@@ -1,3 +1,73 @@
+_______________________
+
+Releases Notes
+_______________________
+
+
+
+2.1.8
+
+Tester la creation des utilisateurs des deux facons disponibles dans le tool et, a chaque fois,
+le mot de passe est bel et bien applique, aucun changement a effectuer.
+
+Ajouter le changement dans les Group Policies pour desactiver le verrouillage accidentel de compte.
+
+Essayer de modifier les parametres d'alimentation afin de changer ce que font le bouton On/Off,
+le bouton Veille et la fermeture du capot d'un laptop, cela ne semble pas fonctionner pour l'instant.
+_______________________
+
+
+2.1.7
+
+Correction du lien vers psexec.exe pour les commandes cmd a distance
+
+Enlever les boutons de tweak windows deja disponible dans auto setup
+
+Deplacer les boutons de la barre de gauche pour un meilleur classement
+
+Ajout et correction de description
+
+_______________________
+
+2.1.6
+
+Ajout d'un popup lorsqu'une nouvelle version est disponible.
+_______________________
+
+
+2.1.5
+
+Correction de la vitesse de telechargement de la nouvelle version.
+
+La nouvelle version demarre maintenant apres le telechargement, au lieu de l'ancienne.
+_______________________
+
+
+2.1.4
+
+Ajout de l'affichage des nouveautes lors des mises a jour.
+_______________________
+
+
+2.1.3
+
+Remontee du bouton de lancement dans Auto Config / Config PC.
+
+Ajout de l'installation de Chrome via Ninite.
+
+Ajout du numero de version sur la page de login.
+_______________________
+
+
+
+
+
+
+
+
+_______________________
+_______________________
+_______________________
 # Outils-Système
 
 Application de gestion et d'administration système Windows avec interface graphique moderne basée sur CustomTkinter.
