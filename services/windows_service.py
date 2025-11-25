@@ -355,6 +355,32 @@ def add_windows_user(username, password, make_admin, password_never_expires, log
             log_fn(f"❌ Erreur: {e}")
     
     log_fn(f"✅ Utilisateur '{username}' créé")
+    
+    
+    # ---- Ajout AUTOMATIQUE : appliquer le verrouillage de compte ----
+    lock_cmds = [
+        'net accounts /lockoutthreshold:0',
+        'net accounts /lockoutduration:0',
+        'net accounts /lockoutwindow:0'
+    ]
+
+    log_fn("🔧 Application des paramètres de verrouillage de compte…")
+    for cmd in lock_cmds:
+        log_fn(f"Exécution: {cmd}")
+        try:
+            res = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            if res.returncode == 0:
+                log_fn("   → OK")
+            else:
+                log_fn(f"   ⚠ Code retour: {res.returncode}")
+                if res.stderr:
+                    log_fn(f"   {res.stderr}")
+        except Exception as e:
+            log_fn(f"❌ Erreur: {e}")
+    
+    log_fn(f"✅ Utilisateur '{username}' créé (avec verrouillage appliqué)")
+    
+    
 
 
 def create_veloce_shortcuts(folder, log_fn):

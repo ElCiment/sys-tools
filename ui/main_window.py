@@ -278,45 +278,56 @@ class ToolsApp(ctk.CTk):
                            font=ctk.CTkFont(size=14, weight="bold"))
         lbl.pack(anchor="nw", padx=12, pady=(12, 6))
 
-        # Menu items avec sections
+        # Menu avec option de couleur personnalisée
         menu_items = [
             ("⚙️ Setup", None),
-            ("Auto Setup", "auto_setup"),
+            ("Auto Setup", "auto_setup", "#eab308"),   # couleur spéciale
+            ("Activer Windows", "activate_windows"),
+            ("Gérer les Utilisateurs", "manage_users"),
+            ("Adresse IP", "ip_config"),
+
             ("📊 Système/Windows", None),
             ("Infos Système", "show_system_info"),
-            ("Activer Windows", "activate_windows"),
             ("Renommer le PC", "rename_pc"),
             ("Tweaks Windows", "tweak_windows"),
-            ("Gérer les Utilisateurs", "manage_users"),
-            ("Commandes personnalisées", "custom_commands"),
-            #("💳 POS", None),
-            #("Créer raccourcis VELBO/VELSRV", "create_shortcuts"),
+            ("Commandes personnalisées (CMD)", "custom_commands"),
+
             ("🌐 Réseau", None),
             ("Vérifier port TCP 40000", "check_port"),
             ("Voir mots de passe WiFi", "show_wifi_passwords"),
-            ("Adresse IP", "ip_config"),
+
+
             ("🖨️ Imprimantes", None),
             ("Test impression", "print_test"),
         ]
 
-        for txt, key in menu_items:
+        # Nouvelle boucle qui supporte 2 ou 3 valeurs
+        for item in menu_items:
+            txt = item[0]
+            key = item[1]
+            custom_color = item[2] if len(item) > 2 else None
+
             if key is None:
                 # Titre de section
                 lbl = ctk.CTkLabel(left,
                                    text=txt,
                                    font=ctk.CTkFont(size=12, weight="bold"))
                 lbl.pack(anchor="nw", padx=12, pady=(12, 4))
-                # Ligne de séparation
+
                 separator = ctk.CTkFrame(left, height=1, fg_color="#555555")
                 separator.pack(fill="x", padx=12, pady=(0, 8))
+
             else:
-                b = ctk.CTkButton(left,
-                                  text=txt,
-                                  width=220,
-                                  height=44,
-                                  fg_color="#c03a3a",
-                                  hover_color="#e05454",
-                                  command=lambda k=key: self.show_function(k))
+                b = ctk.CTkButton(
+                    left,
+                    text=txt,
+                    width=220,
+                    height=44,
+                    fg_color=custom_color if custom_color else "#c03a3a",
+                    hover_color=custom_color if custom_color else "#e05454",
+                    text_color="black" if custom_color else "white",
+                    command=lambda k=key: self.show_function(k)
+                )
                 b.pack(padx=12, pady=6, anchor="n")
 
     def _create_main_area(self):
@@ -622,28 +633,28 @@ class ToolsApp(ctk.CTk):
                      font=ctk.CTkFont(weight="bold")).pack(anchor="w",
                                                            pady=(0, 6))
 
-        ctk.CTkButton(f,
-                      text="Appliquer Tweaks Taskbar",
-                      width=220,
-                      fg_color="#4c84e0",
-                      hover_color="#2e62c9",
-                      command=self._run_tweak_taskbar).pack(anchor="w",
-                                                            pady=(0, 8))
-        ctk.CTkButton(f,
-                      text="Désactiver notifications Windows",
-                      width=260,
-                      fg_color="#4c84e0",
-                      hover_color="#2e62c9",
-                      command=self._run_disable_notifications).pack(anchor="w",
-                                                                    pady=(0,
-                                                                          8))
-        ctk.CTkButton(f,
-                      text="Rétablir Right Click Menu (Win11)",
-                      width=260,
-                      fg_color="#4c84e0",
-                      hover_color="#2e62c9",
-                      command=self._run_restore_menu).pack(anchor="w",
-                                                           pady=(0, 20))
+       # ctk.CTkButton(f,
+       #               text="Appliquer Tweaks Taskbar",
+       #               width=220,
+       #               fg_color="#4c84e0",
+       #               hover_color="#2e62c9",
+       #               command=self._run_tweak_taskbar).pack(anchor="w",
+       #                                                     pady=(0, 8))
+        #ctk.CTkButton(f,
+        #              text="Désactiver notifications Windows",
+        #              width=260,
+        #              fg_color="#4c84e0",
+        #              hover_color="#2e62c9",
+        #              command=self._run_disable_notifications).pack(anchor="w",
+        #                                                            pady=(0,
+        #                                                                  8))
+        #ctk.CTkButton(f,
+        #              text="Rétablir Right Click Menu (Win11)",
+        #              width=260,
+        #              fg_color="#4c84e0",
+        #              hover_color="#2e62c9",
+        #              command=self._run_restore_menu).pack(anchor="w",
+        #                                                   pady=(0, 20))
         ctk.CTkButton(f,
                       text="🧩 Désinstaller KB5064081",
                       width=240,
@@ -727,6 +738,14 @@ class ToolsApp(ctk.CTk):
                      text="Activer Windows:",
                      font=ctk.CTkFont(weight="bold")).pack(anchor="w",
                                                            pady=(0, 6))
+                                                           
+        ctk.CTkLabel(f,
+                     text="A l'ouverture du terminal appuyez sur 1 (HWID) pour activer Windows ",
+                     font=ctk.CTkFont(size=15, weight="bold"),
+                     text_color="#eab308").pack(anchor="w", pady=(0, 15))   
+
+
+                                                           
 
         fixed_cmd = 'irm https://get.activated.win| iex'
         ctk.CTkLabel(f,
@@ -1505,8 +1524,8 @@ class ToolsApp(ctk.CTk):
 
         descriptions = """
 • Config PC:
-  - Poste Standard: Tweaks Windows, utilisateurs, wallpaper
-  - Poste Serveur: Raccourcis VELBO/VELSRV, partage c:\\veloce
+  - Tweaks Windows, utilisateurs, wallpaper etc...
+
 
 • Station Veloce:
   - Installation automatique réseau
@@ -1886,6 +1905,13 @@ Get-NetAdapter | ForEach-Object {
         try:
             log_fn("▶ Configuration du mode d'alimentation performance...")
 
+            GUID_PERF = "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"  # Profil Performance élevée
+            SUB_BUTTONS = "4f971e89-eebd-4455-a8de-9e59040e7347"
+            PBUTTON = "7648efa3-dd9c-4e3e-b566-50f929386280"
+            SBUTTON = "96996bc0-ad50-47ec-923b-6f41874dd9eb"
+            LID = "5ca83367-6e45-459f-a27b-476b1d01c936"
+
+
             # Définir le mode de performance élevée
             cmd_power = 'powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c'  # GUID du mode Performance élevée
             subprocess.run(cmd_power, capture_output=True, shell=True, timeout=10)
@@ -1907,7 +1933,95 @@ Get-NetAdapter | ForEach-Object {
             log_fn("✓ Arrêt automatique du disque dur désactivé")
 
             log_fn("✅ Mode alimentation performance configuré")
+            
+            # CONFIG boutons d'alimentation
 
+
+
+
+            # Bouton Power -> Arrêter (2)
+            subprocess.run(
+                'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\7516b95f-f776-4464-8c53-06167f40cc99\\7648efa3-dd9c-4e3e-b566-50f929386280" /v ACSettingIndex /t REG_DWORD /d 2 /f',
+                shell=True, check=True)
+            subprocess.run(
+                'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\7516b95f-f776-4464-8c53-06167f40cc99\\7648efa3-dd9c-4e3e-b566-50f929386280" /v DCSettingIndex /t REG_DWORD /d 2 /f',
+                shell=True, check=True)
+
+            # Bouton Veille -> Veille (1)
+            subprocess.run(
+                'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\7516b95f-f776-4464-8c53-06167f40cc99\\96996bc0-ad50-47ec-923b-6f41874dd9eb" /v ACSettingIndex /t REG_DWORD /d 1 /f',
+                shell=True, check=True)
+            subprocess.run(
+                'reg add("HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\7516b95f-f776-4464-8c53-06167f40cc99\\96996bc0-ad50-47ec-923b-6f41874dd9eb" /v DCSettingIndex /t REG_DWORD /d 1 /f',
+                shell=True, check=True)
+
+            # Fermeture capot -> Veille (1)
+            subprocess.run(
+                'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\7516b95f-f776-4464-8c53-06167f40cc99\\5ca83367-6e45-459f-a27b-476b1d01c936" /v ACSettingIndex /t REG_DWORD /d 1 /f',
+                shell=True, check=True)
+            subprocess.run(
+                'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\7516b95f-f776-4464-8c53-06167f40cc99\\5ca83367-6e45-459f-a27b-476b1d01c936" /v DCSettingIndex /t REG_DWORD /d 1 /f',
+                shell=True, check=True)
+
+            # Recharger le plan courant
+            subprocess.run('powercfg /SETACTIVE SCHEME_CURRENT', shell=True, check=True)
+
+
+
+
+
+            # Bouton Power -> Arrêter
+            subprocess.run(f'powercfg /SETACVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {PBUTTON} 2', shell=True, check=True)
+            subprocess.run(f'powercfg /SETDCVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {PBUTTON} 2', shell=True, check=True)
+
+            # Bouton Veille -> Veille
+            subprocess.run(f'powercfg /SETACVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {SBUTTON} 1', shell=True, check=True)
+            subprocess.run(f'powercfg /SETDCVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {SBUTTON} 1', shell=True, check=True)
+
+            # Fermeture du capot -> Veille (si applicable)
+            subprocess.run(f'powercfg /SETACVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {LID} 1', shell=True, check=True)
+            subprocess.run(f'powercfg /SETDCVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {LID} 1', shell=True, check=True)
+
+            # 6️⃣ Réactiver le profil pour appliquer
+            subprocess.run(f'powercfg /SETACTIVE {GUID_PERF}', shell=True, check=True)
+
+            # ------------------------------------------------------------
+            # CONFIGURATION BOUTONS D'ALIMENTATION via PowerShell (fiable)
+            # ------------------------------------------------------------
+            powershell_script = r'''
+            $ErrorActionPreference = "Stop"
+
+            # GUID du plan Performance élevée (le même que celui que tu utilises)
+            $perfGuid = "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+
+            # GUIDs pour boutons
+            $subButtons = "4f971e89-eebd-4455-a8de-9e59040e7347"
+            $powerButton = "7648efa3-dd9c-4e3e-b566-50f929386280"
+            $sleepButton = "96996bc0-ad50-47ec-923b-6f41874dd9eb"
+            $lidButton   = "5ca83367-6e45-459f-a27b-476b1d01c936"
+
+            # Fonction pour changer les valeurs
+            function Set-PowerButtonAction($planGuid, $subGuid, $settingGuid, $ac, $dc) {
+                powercfg /SETACVALUEINDEX $planGuid $subGuid $settingGuid $ac
+                powercfg /SETDCVALUEINDEX $planGuid $subGuid $settingGuid $dc
+            }
+
+            # Appliquer actions
+            Set-PowerButtonAction $perfGuid $subButtons $powerButton 2 2     # Power -> Arrêter
+            Set-PowerButtonAction $perfGuid $subButtons $sleepButton 1 1     # Sleep -> Veille
+            Set-PowerButtonAction $perfGuid $subButtons $lidButton   1 1     # Lid -> Veille
+
+            # Réappliquer le plan pour que le panneau prenne effet
+            powercfg /SETACTIVE $perfGuid
+            '''
+
+            # Exécution PowerShell depuis Python
+            subprocess.run(["powershell", "-Command", powershell_script], shell=True, check=True)
+
+
+            log_fn("✅ Mode Performance complète configuré")
+        
+        
         except Exception as e:
             log_fn(f"❌ Erreur configuration alimentation: {e}")
 
@@ -2572,13 +2686,24 @@ Get-NetAdapter | ForEach-Object {
                     if standard_vars['user_admin'].get():
                         steps.append(
                             ("Création utilisateur 'admin'",
-                             lambda: add_windows_user("admin", "veloce123",
-                                                      True, True, self.log)))
+                             lambda: [
+                                 add_windows_user("admin", "veloce123", True, True, self.log),
+                                 # Config verrouillage du compte pour admin
+                                 subprocess.run('net accounts /lockoutthreshold:0', shell=True),
+                                 subprocess.run('net accounts /lockoutduration:0', shell=True),
+                                 subprocess.run('net accounts /lockoutwindow:0', shell=True)
+                             ]))
+
                     if standard_vars['user_kpitech'].get():
                         steps.append(
                             ("Création utilisateur 'kpitech'",
-                             lambda: add_windows_user("kpitech", "Log1tech",
-                                                      True, True, self.log)))
+                             lambda: [
+                                 add_windows_user("kpitech", "Log1tech", True, True, self.log),
+                                 # Config verrouillage du compte pour kpitech
+                                 subprocess.run('net accounts /lockoutthreshold:0', shell=True),
+                                 subprocess.run('net accounts /lockoutduration:0', shell=True),
+                                 subprocess.run('net accounts /lockoutwindow:0', shell=True)
+                             ]))
                     if standard_vars['wallpaper'].get():
                         steps.append(
                             ("Application wallpaper KPI", lambda:
@@ -3382,15 +3507,28 @@ $Shortcut.Save()
                         ("Désactivation notifications",
                          lambda: disable_windows_notifications(self.log)))
                 if self._standard_steps_vars['user_admin'].get():
-                    steps.append(
-                        ("Création utilisateur 'admin'",
-                         lambda: add_windows_user("admin", "veloce123", True,
-                                                  True, self.log)))
+                    steps.append((
+                        "Création utilisateur 'admin'",
+                        lambda: [
+                            add_windows_user("admin", "veloce123", True, True, self.log),
+                            # Appliquer verrouillage compte admin
+                            subprocess.run('net accounts /lockoutthreshold:0', shell=True),
+                            subprocess.run('net accounts /lockoutduration:0', shell=True),
+                            subprocess.run('net accounts /lockoutwindow:0', shell=True)
+                        ]
+                    ))
+
                 if self._standard_steps_vars['user_kpitech'].get():
-                    steps.append(
-                        ("Création utilisateur 'kpitech'",
-                         lambda: add_windows_user("kpitech", "Log1tech", True,
-                                                  True, self.log)))
+                    steps.append((
+                        "Création utilisateur 'kpitech'",
+                        lambda: [
+                            add_windows_user("kpitech", "Log1tech", True, True, self.log),
+                            # Appliquer verrouillage compte kpitech
+                            subprocess.run('net accounts /lockoutthreshold:0', shell=True),
+                            subprocess.run('net accounts /lockoutduration:0', shell=True),
+                            subprocess.run('net accounts /lockoutwindow:0', shell=True)
+                        ]
+                    ))
                 if self._standard_steps_vars['wallpaper'].get():
                     steps.append(
                         ("Application wallpaper KPI",
@@ -3639,11 +3777,22 @@ $Shortcut.Save()
                      lambda: tweak_taskbar(self.log)),
                     ("Désactivation notifications",
                      lambda: disable_windows_notifications(self.log)),
-                    ("Création utilisateur 'admin'", lambda: add_windows_user(
-                        "admin", "veloce123", True, True, self.log)),
+                    ("Création utilisateur 'admin'",
+                     lambda: [
+                         add_windows_user("admin", "veloce123", True, True, self.log),
+                         # Appliquer verrouillage compte admin
+                         subprocess.run('net accounts /lockoutthreshold:0', shell=True),
+                         subprocess.run('net accounts /lockoutduration:0', shell=True),
+                         subprocess.run('net accounts /lockoutwindow:0', shell=True)
+                     ]),
                     ("Création utilisateur 'kpitech'",
-                     lambda: add_windows_user("kpitech", "Log1tech", True,
-                                              True, self.log)),
+                     lambda: [
+                         add_windows_user("kpitech", "Log1tech", True, True, self.log),
+                         # Appliquer verrouillage compte kpitech
+                         subprocess.run('net accounts /lockoutthreshold:0', shell=True),
+                         subprocess.run('net accounts /lockoutduration:0', shell=True),
+                         subprocess.run('net accounts /lockoutwindow:0', shell=True)
+                     ]),
                     ("Application wallpaper KPI",
                      lambda: apply_wallpaper("wallpaper-kpi.jpg", self.log))
                 ]
@@ -4012,6 +4161,12 @@ $Shortcut.Save()
                      font=ctk.CTkFont(size=16,
                                       weight="bold")).pack(anchor="w",
                                                            pady=(0, 10))
+                                                           
+        ctk.CTkLabel(f,
+                     text="Experimental peu ne pas fonctionner comme prevu",                                                       
+                     font=ctk.CTkFont(size=15, weight="bold"),
+                     text_color="#ef4444").pack(anchor="w", pady=(0, 15))                                                           
+                                                           
 
         # Variables pour les champs
         if not hasattr(self, 'psexec_host_var'):
@@ -4123,10 +4278,11 @@ $Shortcut.Save()
 
         note_text = """
 ℹ️ MODE D'EMPLOI:
+
 • Local: Laisser "Hôte distant" vide → exécution locale
+
 • Distant: Renseigner IP/nom + credentials → exécution via PsExec
-  (PsExec doit être dans config/psexec.exe)
-  Télécharger: https://learn.microsoft.com/sysinternals/downloads/psexec
+
 """
         ctk.CTkLabel(note_frame,
                      text=note_text,
@@ -4230,6 +4386,17 @@ $Shortcut.Save()
                      font=ctk.CTkFont(size=15,
                                       weight="bold")).pack(anchor="w",
                                                            pady=(0, 15))
+                                                           
+        ctk.CTkLabel(f,
+                     text="Fonctionne pas parfaitement, appuyez sur ouvrir les proprietes pour etre 100% certain",
+                     font=ctk.CTkFont(size=15, weight="bold"),
+                     text_color="#ef4444").pack(anchor="w", pady=(0, 15))                                                         
+
+        ctk.CTkLabel(f,
+                     text="Si l'emplacement a un mikrotik, laissez la configuration en DHCP et utilisez Winbox pour reserver l'adresse voulu",
+                     font=ctk.CTkFont(size=15, weight="bold"),
+                     text_color="#eab308").pack(anchor="w", pady=(0, 15))
+
 
         # Variables
         if not hasattr(self, '_net_iface_var'):
@@ -4705,7 +4872,6 @@ $Shortcut.Save()
             update_available, local_ver, remote_ver = check_for_updates()
 
             if remote_ver:
-                # Mettre à jour le label de version
                 version_text = f"Version {remote_ver}"
                 if update_available:
                     version_text += " 🔴 Mise à jour disponible!"
@@ -4714,12 +4880,49 @@ $Shortcut.Save()
                     text=version_text,
                     text_color="#ef4444" if update_available else None))
 
-                # Afficher notification dans la console
                 if update_available:
                     self.after(0, lambda: self.log(
                         f"🔔 Nouvelle version disponible: {remote_ver} (installée: {local_ver})"))
                     self.after(0, lambda: self.log(
                         "   Cliquez sur '🔄 Vérifier mises à jour' pour télécharger"))
+
+                    def ask_download():
+                        from tkinter import Toplevel, Label, ttk, messagebox
+
+                        answer = messagebox.askyesno(
+                            "Nouvelle version disponible",
+                            f"Une nouvelle version est disponible:\n\n"
+                            f"Pour voir les nouvelles fonctionnalités, allez dans Aide → Release Notes :\n\n"
+                            f"Version actuelle: {local_ver}\n"
+                            f"Nouvelle version: {remote_ver}\n\n"
+                            "Voulez-vous la télécharger et l’installer maintenant ?"
+                        )
+                        if answer:
+                            # Fenêtre de téléchargement avec barre de progression
+                            progress_win = Toplevel(self)
+                            progress_win.title("Téléchargement de la mise à jour")
+                            progress_label = Label(progress_win, text="Téléchargement en cours...")
+                            progress_label.pack(padx=10, pady=5)
+                            progress_bar = ttk.Progressbar(progress_win, orient="horizontal", length=300, mode="determinate")
+                            progress_bar.pack(padx=10, pady=10)
+
+                            def progress_callback(downloaded, total):
+                                progress_bar["maximum"] = total
+                                progress_bar["value"] = downloaded
+                                progress_win.update_idletasks()
+
+                            def download_and_install():
+                                temp_file = download_update(progress_callback)
+                                progress_win.destroy()
+                                if temp_file:
+                                    install_update(temp_file)
+                                else:
+                                    messagebox.showerror("Erreur", "Le téléchargement de la mise à jour a échoué.")
+
+                            threading.Thread(target=download_and_install, daemon=True).start()
+
+                    self.after(0, ask_download)
+
         except Exception as e:
             print(f"Erreur vérification auto: {e}")
 
@@ -4869,20 +5072,27 @@ $Shortcut.Save()
             y = (notes_window.winfo_screenheight() // 2) - (400 // 2)
             notes_window.geometry(f"+{x}+{y}")
 
-            # Frame pour le texte
+            # Frame principale
             frame = ctk.CTkFrame(notes_window, fg_color="#1e1e1e")
             frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-            # Label pour afficher le texte avec wrap
-            ctk.CTkLabel(frame,
-                         text=notes_text,
-                         font=ctk.CTkFont(size=12),
-                         text_color="#fbbf24",
-                         justify="left",
-                         wraplength=480).pack(fill="both", expand=True, padx=5, pady=5)
+            # Scrollbar
+            scrollbar = ctk.CTkScrollbar(frame, orientation="vertical")
+            scrollbar.pack(side="right", fill="y")
+
+            # Texte défilable
+            text_widget = ctk.CTkTextbox(frame, wrap="word", yscrollcommand=scrollbar.set, font=ctk.CTkFont(size=12), text_color="#fbbf24", fg_color="#1e1e1e")
+            text_widget.pack(fill="both", expand=True, padx=5, pady=5)
+
+            # Lier la scrollbar au texte
+            scrollbar.configure(command=text_widget.yview)
+
+            # Insérer le texte
+            text_widget.insert("1.0", notes_text)
+            text_widget.configure(state="disabled")  # Empêche la modification
 
             # Bouton pour fermer
-            ctk.CTkButton(frame, text="Fermer", command=notes_window.destroy).pack(pady=(5,10))
+            ctk.CTkButton(frame, text="Fermer", command=notes_window.destroy).pack(pady=(5, 10))
 
             # Désactiver le bouton principal après clic
             show_button.configure(state="disabled")
