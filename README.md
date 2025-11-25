@@ -68,13 +68,6 @@ _______________________
 _______________________
 _______________________
 _______________________
-# Outils-Système
-
-Application de gestion et d'administration système Windows avec interface graphique moderne basée sur CustomTkinter.
-
-## 📋 Description
-
-Outils-Système est une suite complète d'outils d'administration permettant de gérer, configurer et diagnostiquer des postes de travail Windows. L'application centralise les opérations courantes d'administration système, de gestion réseau, de configuration matériel et de diagnostic.
 
 ## 🎯 Fonctionnalités principales
 
@@ -138,13 +131,6 @@ Outils-Système est une suite complète d'outils d'administration permettant de 
   - Configuration baudrate, parité, bits de données
   - Support imprimantes thermiques ESC/P
 
-### 🔧 Configuration POS
-
-#### Raccourcis et configuration
-- Création automatique de raccourcis bureau (VELBO/VELSRV)
-- Configuration serveur personnalisable
-- Chemins réseau configurables
-- Support multi-stations
 
 ### 🔄 Système de mise à jour
 
@@ -153,30 +139,19 @@ Outils-Système est une suite complète d'outils d'administration permettant de 
 - Notification visuelle des mises à jour disponibles
 - Téléchargement en un clic avec barre de progression
 - Installation automatique et redémarrage de l'application
-- URLs de téléchargement configurables (serveur web, Google Drive, GitHub)
-- Gestion de version dynamique
 
-## 📦 Installation
-
+## 📦 Installation pour python sans le exe
 ### Prérequis
 - **Système** : Windows 10/11
 - **Python** : 3.10 ou supérieur (pour développement)
 - **Droits** : Privilèges administrateur pour certaines fonctions
 
-### Mode développement
-
-1. **Cloner le projet**
-   ```bash
-   git clone <repository>
-   cd Outils-Systeme
-   ```
-
-2. **Installer les dépendances**
+**Installer les dépendances**
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Lancer l'application**
+**Lancer l'application**
    ```bash
    python main.py
    ```
@@ -199,23 +174,6 @@ Outils-Système est une suite complète d'outils d'administration permettant de 
 - **Zone centrale** : Options et boutons de la fonctionnalité sélectionnée
 - **Console** : Affichage en temps réel des opérations et résultats
 - **Menu supérieur** : Accès rapide aux outils Windows et téléchargements
-
-### Fonctions courantes
-
-#### Auto-setup d'une station
-1. Sélectionnez "Auto Setup"
-2. Renseignez :
-   - Serveur (ex: SRV-01)
-   - Numéro de station (ex: 01)
-3. Cliquez sur "💳 Station Veloce"
-4. Suivez la progression dans la console
-
-
-#### Test d'imprimante
-1. Sélectionnez "🖨️ Imprimantes" → "Test impression"
-2. Choisissez TCP ou COM
-3. Configurez les paramètres (IP/Port ou port série)
-4. Cliquez sur "Imprimer un test"
 
 ## 📁 Structure du projet
 
@@ -255,10 +213,6 @@ Outils-Systeme/
    ```
 3. Sauvegardez et recompilez
 
-**Exemples d'URLs** :
-- **GitHub** : `https://github.com/user/repo/releases/download/tag/file.exe`
-- **Google Drive** : `https://drive.google.com/uc?export=download&id=FILE_ID`
-- **Dropbox** : `https://dl.dropboxusercontent.com/s/abc123/file.exe`
 
 ## 🛠️ Compilation
 
@@ -285,26 +239,7 @@ L'exécutable sera créé dans `dist/Sys-Tools.exe`
 - `--onefile` : Un seul fichier exe (tous les fichiers sont embedés)
 - `--noconsole` : Pas de fenêtre console
 
-## ⚙️ Architecture technique
 
-### Séparation des responsabilités
-- **utils/** : Fonctions utilitaires réutilisables
-- **services/** : Logique métier (imprimantes, Windows, réseau)
-- **ui/** : Interface graphique et interactions utilisateur
-
-### Technologies utilisées
-- **CustomTkinter** : Interface graphique moderne
-- **psutil** : Monitoring système
-- **pyserial** : Communication série pour imprimantes
-- **urllib** : Téléchargement de mises à jour
-- **subprocess** : Exécution de commandes système
-
-### Avantages de l'architecture
-- Code modulaire et maintenable
-- Élimination des duplications
-- Gestion d'erreurs cohérente
-- Documentation claire avec docstrings
-- Facilité de tests et d'extensions
 
 ## ⚠️ Avertissements
 
