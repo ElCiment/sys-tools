@@ -224,7 +224,7 @@ Fenêtre de progression avec étapes à cocher. S'exécutent dans l'ordre.
 |---|---|
 | `version.txt` | Version locale (ex: `2.2.3`) — comparée au serveur pour détecter les MAJ |
 | `update_config.txt` | `VERSION_URL` et `DOWNLOAD_URL` pour le système de mise à jour |
-| `main.py` ligne `PASSWORDS` | 
+| `main.py` ligne `PASSWORDS` |
 | `assets/wallpapers/` | Images `.jpg/.png/.bmp` disponibles dans le sélecteur de fond d'écran |
 
 ---

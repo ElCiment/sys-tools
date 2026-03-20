@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Outils - Système KPI Tech</title>
+  <style>
+    :root {
+      --bg: #1a1a1a;
+      --bg2: #232323;
+      --bg3: #2a2a2a;
+      --border: #3a3a3a;
+      --green: #4ade80;
+      --blue: #60a5fa;
+      --yellow: #fbbf24;
+      --text: #e2e8f0;
+      --text-dim: #94a3b8;
+      --code-bg: #111;
+      --code-text: #86efac;
+      --th-bg: #2f2f2f;
+      --tr-alt: #222;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .layout { display: flex; min-height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    nav {
+      width: 240px;
+      min-width: 240px;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      padding: 20px 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    nav .nav-title {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 0 16px 14px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+
+    nav a {
+      display: block;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 4px 16px;
+      font-size: 12.5px;
+      transition: color .12s, background .12s;
+      border-left: 2px solid transparent;
+    }
+
+    nav a:hover, nav a.active {
+      color: var(--green);
+      background: rgba(74,222,128,.05);
+      border-left-color: var(--green);
+    }
+
+    nav .nav-section {
+      color: #555;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 12px 16px 3px;
+    }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      max-width: 980px;
+      padding: 44px 48px 80px;
+    }
+
+    .page-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 22px;
+      margin-bottom: 36px;
+    }
+
+    .page-header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 6px;
+    }
+
+    .page-header p { color: var(--text-dim); }
+
+    .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+    .badge {
+      background: #1e3a2f;
+      color: var(--green);
+      border: 1px solid #2d6a4f;
+      border-radius: 5px;
+      padding: 3px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'Courier New', monospace;
+    }
+
+    .badge.blue { background: #1e2f4a; color: var(--blue); border-color: #2a4a7f; }
+
+    section { margin-bottom: 48px; }
+
+    h2 {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--green);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 9px;
+      margin-bottom: 18px;
+      scroll-margin-top: 20px;
+    }
+
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--blue);
+      margin: 22px 0 10px;
+      scroll-margin-top: 20px;
+    }
+
+    h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--yellow);
+      margin: 16px 0 8px;
+    }
+
+    p { margin-bottom: 10px; }
+    ul { padding-left: 18px; margin-bottom: 10px; }
+    ul li { margin-bottom: 3px; }
+
+    /* ── TABLES ── */
+    .table-wrap { overflow-x: auto; margin-bottom: 14px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+    th {
+      background: var(--th-bg);
+      color: var(--text-dim);
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 9px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.6;
+    }
+
+    tr:nth-child(even) td { background: var(--tr-alt); }
+    tr:hover td { background: #282828; }
+    td:first-child { font-weight: 600; color: #cbd5e1; white-space: nowrap; }
+
+    /* ── CODE ── */
+    code {
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid #2a2a2a;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 16px 18px;
+      overflow-x: auto;
+      margin: 10px 0 16px;
+    }
+
+    pre code { background: none; border: none; padding: 0; font-size: 12.5px; line-height: 1.65; }
+
+    /* ── CALLOUT ── */
+    .callout {
+      border-left: 3px solid var(--green);
+      background: rgba(74,222,128,.05);
+      padding: 9px 14px;
+      border-radius: 0 5px 5px 0;
+      margin: 10px 0 16px;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .callout.warn { border-color: var(--yellow); background: rgba(251,191,36,.05); }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+    .tree {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 16px 18px;
+      font-family: 'Courier New', monospace;
+      font-size: 12.5px;
+      line-height: 1.8;
+      color: #a3e635;
+    }
+
+    .tree .c { color: #555; }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+    @media (max-width: 768px) { nav { display: none; } main { padding: 20px 16px 60px; } }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ── SIDEBAR ── -->
+<nav>
+  <div class="nav-title">KPI Tech — Docs</div>
+
+  <div class="nav-section">En-tête</div>
+  <a href="#entete">En-tête de l'app</a>
+
+  <div class="nav-section">Menus</div>
+  <a href="#menus">Barre de menus</a>
+
+  <div class="nav-section">Setup</div>
+  <a href="#config-pc">Config PC — Poste Standard</a>
+  <a href="#config-serveur">Config PC — Poste Serveur</a>
+  <a href="#station-veloce">Station Veloce</a>
+  <a href="#activer-windows">Activer Windows</a>
+  <a href="#utilisateurs">Gérer les Utilisateurs</a>
+  <a href="#adresse-ip">Adresse IP</a>
+
+  <div class="nav-section">Système / Windows</div>
+  <a href="#infos-systeme">Infos Système</a>
+  <a href="#renommer">Renommer le PC</a>
+  <a href="#tweaks">Tweaks Windows</a>
+  <a href="#cmd">Commandes CMD</a>
+
+  <div class="nav-section">Réseau</div>
+  <a href="#port-tcp">Vérifier port TCP</a>
+  <a href="#wifi">Mots de passe WiFi</a>
+
+  <div class="nav-section">Imprimantes</div>
+  <a href="#impression">Test impression</a>
+
+  <div class="nav-section">Référence</div>
+  <a href="#config-files">Fichiers de config</a>
+  <a href="#compilation">Lancement &amp; Compilation</a>
+  <a href="#structure">Structure fichiers</a>
+</nav>
+
+<!-- ── MAIN ── -->
+<main>
+
+  <div class="page-header">
+    <h1>Outils — Système KPI Tech</h1>
+    <p>Interface d'administration Windows — dark mode — nécessite les droits administrateur.</p>
+    <div class="badges">
+
+      <span class="badge blue">python main.py</span>
+      <span class="badge blue">Sys-Tools.exe</span>
+    </div>
+  </div>
+
+  <!-- EN-TÊTE -->
+  <section id="entete">
+    <h2>En-tête (toujours visible)</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Élément</th><th>Ce que ça fait</th><th>Commande / mécanisme</th></tr>
+      <tr><td>Numéro de version</td><td>Affiche la version locale</td><td>Lit <code>version.txt</code></td></tr>
+      <tr><td>Bouton Mise à jour</td><td>Vérifie MAJ, télécharge et relance l'exe</td><td>Compare <code>version.txt</code> à <code>VERSION_URL</code> dans <code>update_config.txt</code></td></tr>
+      <tr><td>Password Veloce du jour</td><td>Calcule le mot de passe journalier Veloce</td><td>Dernier chiffre de jour/mois/année → mapping 0=A…9=J → <code>(J)V(M)E(A)L</code></td></tr>
+      <tr><td>TeamViewer ID / AnyDesk ID</td><td>Affiche les IDs au démarrage</td><td>Interroge les processus locaux TeamViewer / AnyDesk</td></tr>
+      <tr><td>Bouton Clear</td><td>Vide la console</td><td>—</td></tr>
+    </table></div>
+  </section>
+
+  <!-- MENUS -->
+  <section id="menus">
+    <h2>Menus (barre du haut)</h2>
+    <h3>Fichier</h3>
+    <ul><li>Quitter</li></ul>
+
+    <h3>Outils — raccourcis Windows natifs</h3>
+    <ul>
+      <li>Panneau de configuration</li>
+      <li>Gérer l'ordinateur</li>
+      <li>Gestionnaire des tâches</li>
+      <li>Programmes et fonctionnalités</li>
+      <li>Windows Update</li>
+      <li>Connexions réseau</li>
+    </ul>
+
+    <h3>Système — raccourcis Windows natifs</h3>
+    <ul>
+      <li>Explorateur, msinfo32, PowerShell, regedit, services.msc, msconfig, dossier Démarrage</li>
+      <li><strong>Tweak ChrisTitus</strong> — crée un <code>.ps1</code> dans <code>%TEMP%</code> puis <code>ShellExecuteW(runas)</code> :</li>
+    </ul>
+    <pre><code>Set-ExecutionPolicy Bypass -Scope Process -Force
+irm https://christitus.com/win | iex</code></pre>
+
+    <h3>Aide</h3>
+    <ul>
+      <li>Release Notes : contenu distant dans une fenêtre</li>
+      <li>Téléchargements : ouvre <code>kpi-tech.ca/launcher/telechargements.html</code></li>
+    </ul>
+  </section>
+
+  <hr>
+
+  <!-- CONFIG PC STANDARD -->
+  <section id="config-pc">
+    <h2>⚙️ Setup → Config PC — Poste Standard</h2>
+    <p>Toutes les cases sont cochables individuellement et s'exécutent dans l'ordre avec barre de progression.</p>
+
+    <div class="table-wrap"><table>
+      <tr><th>Étape</th><th>Commandes exactes</th></tr>
+
+      <tr>
+        <td>Tweak barre des tâches</td>
+        <td>
+          Registre <strong>HKCU</strong> :<br>
+          <code>Explorer\EnableAutoTray = 0</code><br>
+          <code>Policies\Explorer\DisableNotificationCenter = 1</code><br>
+          <code>PushNotifications\ToastEnabled = 0</code><br>
+          <code>Search\SearchboxTaskbarMode = 0</code><br>
+          <code>Explorer\Advanced\ShowTaskViewButton = 0</code><br>
+          <code>Explorer\Advanced\TaskbarGlomLevel = 2</code><br>
+          Win11 : <code>TaskbarAl = 0</code>, <code>TaskbarDa = 0</code><br>
+          Win10 : <code>Feeds\ShellFeedsTaskbarViewMode = 2</code><br>
+          PowerShell : supprime raccourcis épinglés sauf Explorateur/Edge
+        </td>
+      </tr>
+
+      <tr>
+        <td>Désactiver notifications</td>
+        <td>
+          Registre <strong>HKCU</strong> :<br>
+          <code>PushNotifications\ToastEnabled = 0</code><br>
+          <code>ContentDeliveryManager\SubscribedContent-310093Enabled = 0</code><br>
+          <code>ContentDeliveryManager\SubscribedContent-338389Enabled = 0</code><br>
+          <code>ContentDeliveryManager\SoftLandingEnabled = 0</code><br>
+          <code>UserProfileEngagement\ScoobeSystemSettingEnabled = 0</code>
+        </td>
+      </tr>
+
+      <tr>
+        <td>User 'admin'</td>
+        <td>
+          <code>net user "admin" "veloce123" /add</code><br>
+          <code>net user "admin" /active:yes</code><br>
+          <code>net localgroup Administrators "admin" /add</code><br>
+          <code>net localgroup Administrateurs "admin" /add</code><br>
+          <code>wmic useraccount where name="admin" set PasswordExpires=False</code><br>
+          <code>net user "admin" /expires:never</code><br>
+          <code>net accounts /lockoutthreshold:0 /lockoutduration:0 /lockoutwindow:0</code>
+        </td>
+      </tr>
+
+      <tr>
+        <td>User 'kpitech'</td>
+        <td>Mêmes commandes avec <code>kpitech</code> / <code>Log1tech</code> (admin)</td>
+      </tr>
+
+      <tr>
+        <td>Auto logon admin</td>
+        <td>
+          Registre <strong>HKLM</strong> <code>Winlogon</code> :<br>
+          <code>AutoAdminLogon = "1"</code><br>
+          <code>DefaultUserName = "admin"</code><br>
+          <code>DefaultPassword = "veloce123"</code>
+        </td>
+      </tr>
+
+      <tr>
+        <td>Wallpaper KPI</td>
+        <td><code>ctypes.windll.user32.SystemParametersInfoW(20, 0, "[chemin assets/wallpapers/]", 3)</code></td>
+      </tr>
+
+      <tr>
+        <td>Désactiver UAC</td>
+        <td>
+          Registre <strong>HKLM</strong> <code>System\CurrentControlSet\Control\Lsa</code> :<br>
+          <code>EnableLUA = 0</code><br>
+          <code>ConsentPromptBehaviorAdmin = 0</code><br>
+          <code>PromptOnSecureDesktop = 0</code>
+        </td>
+      </tr>
+
+      <tr>
+        <td>Désact. veille réseau</td>
+        <td>
+          PowerShell : désactive "Autoriser l'ordi à éteindre ce périphérique" sur chaque carte réseau :<br>
+          <code>Get-NetAdapter | ForEach-Object { MSPower_DeviceEnable.Enable = $false }</code><br>
+          Fallback : <code>powercfg /change standby-timeout-ac 0</code> + <code>standby-timeout-dc 0</code>
+        </td>
+      </tr>
+
+      <tr>
+        <td>Réseau mode Privé</td>
+        <td>
+          PowerShell :<br>
+          <code>Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private</code>
+        </td>
+      </tr>
+
+      <tr>
+        <td>Fuseau horaire + sync</td>
+        <td>
+          <code>tzutil /s "Eastern Standard Time"</code><br>
+          <code>net stop w32time</code><br>
+          <code>sc config w32time start= auto</code><br>
+          <code>net start w32time</code><br>
+          <code>w32tm /register</code><br>
+          <code>w32tm /config /manualpeerlist:"time.windows.com,time.nist.gov,pool.ntp.org" /syncfromflags:manual /reliable:YES /update</code><br>
+          <code>w32tm /resync /force</code>
+        </td>
+      </tr>
+
+      <tr>
+        <td>Meilleures perfs</td>
+        <td>
+          Registre <strong>HKCU</strong> :<br>
+          <code>Explorer\VisualEffects\VisualFXSetting = 2</code> (Best Performance)<br>
+          <code>Control Panel\Desktop\WindowMetrics\MinAnimate = "0"</code> (désactive animations)
+        </td>
+      </tr>
+
+      <tr>
+        <td>Alimentation perf.</td>
+        <td>
+          <code>powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c</code> (Performance élevée)<br>
+          <code>powercfg /change standby-timeout-ac 0</code> + <code>dc 0</code><br>
+          <code>powercfg /change monitor-timeout-ac 0</code> + <code>dc 0</code><br>
+          <code>powercfg /change disk-timeout-ac 0</code> + <code>dc 0</code><br>
+          
+        </td>
+      </tr>
+
+      <tr>
+        <td>Heures actives</td>
+        <td>
+          Registre <strong>HKLM</strong> <code>SOFTWARE\Microsoft\WindowsUpdate\UX\Settings</code> :<br>
+          <code>ActiveHoursStart = [heure]</code> (défaut : 8)<br>
+          <code>ActiveHoursEnd = [heure]</code> (défaut : 17)<br>
+          Windows ne redémarre pas automatiquement pendant ces heures
+        </td>
+      </tr>
+
+      <tr>
+        <td>Menu contextuel classique (Win11)</td>
+        <td>
+          <code>reg.exe add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve</code>
+        </td>
+      </tr>
+
+      <tr>
+        <td>Modifier protection partage réseau</td>
+        <td>
+          <strong>Désactiver protection</strong> (accès sans mot de passe) :<br>
+          <code>HKLM\Lsa\everyoneincludesanonymous = 1</code><br>
+          <code>LanmanServer\Parameters\RestrictNullSessAccess = 0</code><br>
+          <code>Lsa\ForceGuest = 0</code><br>
+          <code>Policies\System\LocalAccountTokenFilterPolicy = 1</code><br>
+          <strong>Activer protection</strong> : mêmes clés, valeurs inversées (0/1/1/0)
+        </td>
+      </tr>
+
+      <tr>
+        <td>Installation logiciels</td>
+        <td>
+          3 tentatives dans l'ordre :<br>
+          1. <code>winget install --id=[ID] --silent --accept*</code><br>
+          2. <code>choco install [pkg] -y</code> (installe Chocolatey si absent)<br>
+          3. Téléchargement direct + installeur silencieux depuis site officiel
+        </td>
+      </tr>
+
+      <tr>
+        <td>Configuration VNC</td>
+        <td>
+          <code>sc config tvnserver start= auto</code><br>
+          <code>net stop tvnserver</code><br>
+          Registre <strong>HKLM</strong> <code>SOFTWARE\TightVNC\Server</code> :<br>
+          <code>Password = 0x5d,0xd9,0xd3,0x3a,0x0c,0xed,0x17,0xdb</code> (DES de "Log1tech")<br>
+          <code>net start tvnserver</code>
+        </td>
+      </tr>
+
+      <tr>
+        <td>Renommer le PC</td>
+        <td>PowerShell : <code>rename-computer -newname "[NOM]" -force</code></td>
+      </tr>
+
+      <tr>
+        <td>Redémarrage automatique</td>
+        <td><code>shutdown /r /t 10</code></td>
+      </tr>
+
+    </table></div>
+  </section>
+
+  <!-- CONFIG SERVEUR -->
+  <section id="config-serveur">
+    <h2>🖥️ Setup → Config PC — Poste Serveur</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Étape</th><th>Commandes exactes</th></tr>
+      <tr>
+        <td>Raccourcis Bureau VELBO/VELSRV</td>
+        <td>PowerShell <code>WScript.Shell.CreateShortcut</code> → <code>VELBO.lnk</code> et <code>VELSRV.lnk</code> sur le bureau pointant vers <code>velbo.exe</code> / <code>velsrv.exe</code> dans le dossier sélectionné</td>
+      </tr>
+      <tr>
+        <td>Veloce dans pare-feu</td>
+        <td>
+          <code>netsh advfirewall firewall add rule name="Veloce Backoffice" dir=in action=allow program="C:\Veloce\VelSrv\VelSrv.exe" enable=yes profile=any</code><br>
+          Si règle existe déjà : <code>netsh advfirewall firewall set rule name="Veloce Backoffice" new enable=yes profile=any</code>
+        </td>
+      </tr>
+      <tr>
+        <td>Partager c:\veloce (Everyone - Contrôle total)</td>
+        <td>
+          <code>net share veloce /delete</code> (supprime l'ancien si existant)<br>
+          <code>net share veloce=C:\veloce /grant:everyone,full</code>
+        </td>
+      </tr>
+    </table></div>
+  </section>
+
+  <!-- STATION VELOCE -->
+  <section id="station-veloce">
+    <h2>💳 Setup → Station Veloce</h2>
+    <p><strong>Paramètres demandés :</strong> nom du serveur réseau (ex: <code>SV</code>) + numéro de station (ex: <code>1</code> → formaté <code>01</code>)</p>
+    <div class="table-wrap"><table>
+      <tr><th>Étape</th><th>Commandes exactes</th></tr>
+      <tr><td>Installation Veloce</td><td><code>ShellExecuteW("runas", "\\[SERVEUR]\veloce\stat[XX]\install\install (WSXX).exe")</code></td></tr>
+      <tr><td>Raccourci bureau</td><td>PowerShell <code>WScript.Shell.CreateShortcut("...\station X.lnk")</code> → <code>\\[SERVEUR]\veloce\stat[XX]\Veloce WS Starter.exe</code></td></tr>
+      <tr><td>Raccourci Démarrage</td><td>PowerShell <code>WScript.Shell.CreateShortcut</code> dans <code>shell:startup</code></td></tr>
+      <tr><td>Clé registre réseau</td><td><code>HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters\DirectoryCacheLifetime = 0</code></td></tr>
+      <tr><td>Nettoyage</td><td><code>os.remove</code> du raccourci <code>Veloce WS Starter.exe</code> sur le bureau</td></tr>
+      <tr><td>Tweaks optionnels</td><td>Mêmes étapes que Config PC selon les cases cochées</td></tr>
+    </table></div>
+  </section>
+
+  <!-- ACTIVER WINDOWS -->
+  <section id="activer-windows">
+    <h2>🔑 Setup → Activer Windows</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Élément</th><th>Détail</th></tr>
+      <tr><td>Commande affichée</td><td><code>irm https://get.activated.win | iex</code> (non modifiable)</td></tr>
+      <tr><td>Exécution</td><td>PowerShell : <code>-NoProfile -ExecutionPolicy Bypass -Command "irm https://get.activated.win | iex"</code></td></tr>
+    </table></div>
+  </section>
+
+  <!-- UTILISATEURS -->
+  <section id="utilisateurs">
+    <h2>👤 Setup → Gérer les Utilisateurs</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Action</th><th>Commandes exactes</th></tr>
+      <tr><td>Afficher les utilisateurs</td><td><code>net user</code></td></tr>
+      <tr>
+        <td>Créer un utilisateur</td>
+        <td>
+          <code>net user "[nom]" "[mdp]" /add</code><br>
+          <code>net user "[nom]" /active:yes</code><br>
+          Si admin : <code>net localgroup Administrators "[nom]" /add</code><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>net localgroup Administrateurs "[nom]" /add</code><br>
+          <code>wmic useraccount where name="[nom]" set PasswordExpires=False</code><br>
+          <code>net user "[nom]" /expires:never</code><br>
+          <code>net accounts /lockoutthreshold:0 /lockoutduration:0 /lockoutwindow:0</code>
+        </td>
+      </tr>
+      <tr><td>Presets rapides</td><td><code>admin / veloce123</code> (admin) et <code>kpitech / Log1tech</code> (admin)</td></tr>
+      <tr><td>Vérifier auto-login</td><td>Lit <strong>HKLM</strong> <code>Winlogon\AutoAdminLogon</code> et <code>DefaultUserName</code></td></tr>
+      <tr>
+        <td>Activer auto-login</td>
+        <td>
+          <strong>HKLM</strong> <code>Winlogon</code> :<br>
+          <code>AutoAdminLogon = "1"</code><br>
+          <code>DefaultUserName = "[nom]"</code><br>
+          <code>DefaultPassword = "[mdp]"</code>
+        </td>
+      </tr>
+      <tr><td>Désactiver auto-login</td><td><strong>HKLM</strong> <code>Winlogon</code> : <code>AutoAdminLogon = "0"</code>, supprime <code>DefaultPassword</code></td></tr>
+    </table></div>
+  </section>
+
+  <!-- ADRESSE IP -->
+  <section id="adresse-ip">
+    <h2>🌐 Setup → Adresse IP</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Action</th><th>Commandes exactes</th></tr>
+      <tr><td>Détecter les interfaces</td><td><code>psutil.net_if_addrs()</code> + <code>netsh interface ip show config</code></td></tr>
+      <tr>
+        <td>Passer en DHCP</td>
+        <td>
+          <code>netsh interface ipv4 set address name="[X]" source=dhcp</code><br>
+          <code>netsh interface ipv4 set dns name="[X]" source=dhcp</code>
+        </td>
+      </tr>
+      <tr>
+        <td>IP statique</td>
+        <td>
+          <code>netsh interface ipv4 set address name="[X]" static [IP] [MASQUE] [GW]</code><br>
+          (sans GW si vide)<br>
+          <code>netsh interface ipv4 set dns name="[X]" static [DNS1]</code><br>
+          <code>netsh interface ipv4 add dns name="[X]" [DNS2] index=2</code>
+        </td>
+      </tr>
+      <tr><td>Ouvrir propriétés</td><td><code>rundll32.exe shell32.dll,Control_RunDLL ncpa.cpl</code></td></tr>
+    </table></div>
+  </section>
+
+  <hr>
+
+  <!-- INFOS SYSTÈME -->
+  <section id="infos-systeme">
+    <h2>📊 Système → Infos Système</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Info</th><th>Source</th></tr>
+      <tr><td>Nom PC, OS, version, architecture</td><td><code>socket.gethostname()</code>, <code>platform.system()</code>, <code>platform.release()</code>, <code>platform.version()</code></td></tr>
+      <tr><td>CPU modèle</td><td><code>wmic cpu get name</code></td></tr>
+      <tr><td>CPU cœurs / fréquence / usage</td><td><code>psutil.cpu_count()</code>, <code>psutil.cpu_freq()</code>, <code>psutil.cpu_percent(interval=1)</code></td></tr>
+      <tr><td>RAM</td><td><code>psutil.virtual_memory()</code></td></tr>
+      <tr><td>Disques</td><td><code>psutil.disk_partitions()</code> + <code>psutil.disk_usage()</code></td></tr>
+    </table></div>
+  </section>
+
+  <!-- RENOMMER -->
+  <section id="renommer">
+    <h2>✏️ Système → Renommer le PC</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Élément</th><th>Commande</th></tr>
+      <tr><td>Renommage</td><td>PowerShell : <code>rename-computer -newname "[NOM]" -force</code></td></tr>
+      <tr><td>Redémarrage proposé</td><td><code>shutdown /r /t 0</code></td></tr>
+    </table></div>
+  </section>
+
+  <!-- TWEAKS -->
+  <section id="tweaks">
+    <h2>🔧 Système → Tweaks Windows</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Bouton</th><th>Commande exacte</th></tr>
+      <tr><td>Désinstaller KB5064081</td><td><code>wusa /uninstall /kb:5064081 /norestart</code> — fenêtre native Windows</td></tr>
+      <tr><td>Désinstaller une MAJ</td><td>Saisie du numéro KB → <code>wusa /uninstall /kb:[XXXXX] /norestart</code></td></tr>
+      <tr><td>Tweak ChrisTitus</td><td>ps1 temp + <code>ShellExecuteW(runas, powershell.exe)</code> — même mécanisme que le menu Système</td></tr>
+      <tr><td>Wallpaper</td><td><code>ctypes.windll.user32.SystemParametersInfoW(20, 0, "[chemin]", 3)</code></td></tr>
+    </table></div>
+  </section>
+
+  <!-- CMD -->
+  <section id="cmd">
+    <h2>💻 Système → Commandes personnalisées (CMD)</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Champ</th><th>Usage</th></tr>
+      <tr><td>Hôte distant vide</td><td>Exécution locale : <code>subprocess.run([cmd], shell=True)</code></td></tr>
+      <tr><td>Hôte distant renseigné</td><td>Via PsExec : <code>psexec.exe \\[hôte] -u [user] -p [pwd] cmd /c [commande]</code></td></tr>
+      <tr><td>Commandes rapides</td><td><code>systeminfo</code>, <code>tasklist</code>, <code>shutdown /r /t 0</code>, <code>cmd.exe</code></td></tr>
+    </table></div>
+  </section>
+
+  <hr>
+
+  <!-- PORT TCP -->
+  <section id="port-tcp">
+    <h2>🔌 Réseau → Vérifier port TCP</h2>
+    <div class="callout warn">Teste l'accessibilité du port <strong>depuis internet</strong> (pas en local).</div>
+    <div class="table-wrap"><table>
+      <tr><th>Étape</th><th>Détail</th></tr>
+      <tr><td>IP publique</td><td><code>GET https://api.ipify.org?format=json</code> (fallback : <code>https://api.my-ip.io/ip</code>)</td></tr>
+      <tr><td>Test port externe</td><td><code>GET https://api.portchecker.co/check?host=[ip]&amp;port=[port]</code></td></tr>
+      <tr><td>Fallback</td><td><code>POST https://ports.yougetsignal.com/check-port.php</code> avec <code>remoteAddress=[ip]&amp;portNumber=[port]</code></td></tr>
+    </table></div>
+  </section>
+
+  <!-- WIFI -->
+  <section id="wifi">
+    <h2>📶 Réseau → Voir mots de passe WiFi</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Commande</th><th>But</th></tr>
+      <tr><td><code>netsh wlan show profiles</code></td><td>Liste tous les profils WiFi enregistrés</td></tr>
+      <tr><td><code>netsh wlan show profile name="[X]" key=clear</code></td><td>Extrait le mot de passe en clair pour chaque profil</td></tr>
+    </table></div>
+  </section>
+
+  <hr>
+
+  <!-- IMPRESSION -->
+  <section id="impression">
+    <h2>🖨️ Imprimantes → Test impression</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Mode</th><th>Commande / mécanisme</th></tr>
+      <tr><td>TCP/IP</td><td><code>socket.create_connection((IP, port))</code> → envoi bytes ESC/P</td></tr>
+      <tr><td>COM (série)</td><td><code>serial.Serial(port, baudrate)</code> → envoi bytes ESC/P (<code>pyserial</code>)</td></tr>
+      <tr><td>Couleur rouge</td><td>ESC/P : <code>\x1b\x72\x01</code></td></tr>
+      <tr><td>Retour noir</td><td>ESC/P : <code>\x1b\x72\x00</code></td></tr>
+    </table></div>
+  </section>
+
+  <hr>
+
+  <!-- CONFIG FILES -->
+  <section id="config-files">
+    <h2>📁 Fichiers de configuration</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Fichier</th><th>Rôle</th></tr>
+      <tr><td><code>version.txt</code></td><td>Version locale (ex: <code>2.2.3</code>) — comparée au serveur pour détecter les MAJ</td></tr>
+      <tr><td><code>update_config.txt</code></td><td><code>VERSION_URL</code> et <code>DOWNLOAD_URL</code> pour le système de mise à jour</td></tr>
+      <tr><td><code>main.py</code> → <code>PASSWORDS</code></td></tr>
+      <tr><td><code>assets/wallpapers/</code></td><td>Images <code>.jpg/.png/.bmp</code> disponibles dans le sélecteur de fond d'écran</td></tr>
+    </table></div>
+  </section>
+
+  <!-- COMPILATION -->
+  <section id="compilation">
+    <h2>🚀 Lancement et compilation</h2>
+    <pre><code># Développement
+pip install -r requirements.txt
+python main.py
+
+# Compilation exe
+pyinstaller --onefile --noconsole --clean \
+    --icon=mainicon2.ico \
+    --add-data "version.txt;." \
+    --add-data "update_config.txt;." \
+    --add-data "assets;assets" \
+    --hidden-import=customtkinter \
+    --hidden-import=PIL \
+    --hidden-import=psutil \
+    --hidden-import=pyserial \
+    --name "Sys-Tools" \
+    main.py</code></pre>
+  </section>
+
+  <!-- STRUCTURE -->
+  <section id="structure">
+    <h2>🗂️ Structure des fichiers</h2>
+    <div class="tree">
+├── main.py                  <span class="c"># Authentification + lancement</span>
+├── version.txt
+├── update_config.txt
+├── assets/
+│   └── wallpapers/
+├── utils/
+│   ├── system_utils.py      <span class="c"># is_admin(), get_base_path(), relaunch_as_admin()</span>
+│   └── update_manager.py    <span class="c"># check_for_updates(), download_update()</span>
+├── services/
+│   ├── printer_service.py   <span class="c"># ESC/P TCP et COM</span>
+│   ├── windows_service.py   <span class="c"># Tweaks, registre, utilisateurs</span>
+│   └── network_service.py   <span class="c"># Port TCP, WiFi, TeamViewer/AnyDesk</span>
+└── ui/
+    ├── password_dialog.py
+    └── main_window.py       <span class="c"># Toute l'interface (~6000 lignes)</span>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+  const links = document.querySelectorAll('nav a');
+  const sections = document.querySelectorAll('section[id]');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-15% 0px -70% 0px' });
+  sections.forEach(s => obs.observe(s));
+</script>
+
+</body>
+</html>
