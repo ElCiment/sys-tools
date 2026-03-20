@@ -1,294 +1,254 @@
-_______________________
+# Outils - Système KPI Tech
 
-Releases Notes
-_______________________
+Interface d'administration Windows — dark mode — nécessite les droits administrateur.
 
+**Mot de passe :** `Log1tech` ou `Axios1694`
+**Lancement :** `python main.py` ou double-clic sur `Sys-Tools.exe`
 
+---
 
-2.1.8
+## En-tête (toujours visible)
 
-Tester la creation des utilisateurs des deux facons disponibles dans le tool et, a chaque fois,
-le mot de passe est bel et bien applique, aucun changement a effectuer.
+| Élément | Ce que ça fait | Commande/mécanisme |
+|---|---|---|
+| Numéro de version | Affiche la version locale | Lit `version.txt` |
+| Bouton Mise à jour | Vérifie si une MAJ existe, télécharge et relance l'exe | Compare `version.txt` local à `VERSION_URL` dans `update_config.txt` |
+| Password Veloce du jour | Calcule le mot de passe journalier Veloce | Dernier chiffre de jour/mois/année → mapping chiffres→lettres (0=A…9=J) assemblés en `(J)V(M)E(A)L` |
+| TeamViewer ID / AnyDesk ID | Récupère et affiche les IDs au démarrage | Interroge les processus locaux TeamViewer/AnyDesk |
+| Bouton Clear | Vide la console | — |
 
-Ajouter le changement dans les Group Policies pour desactiver le verrouillage accidentel de compte.
+---
 
-Essayer de modifier les parametres d'alimentation afin de changer ce que font le bouton On/Off,
-le bouton Veille et la fermeture du capot d'un laptop, cela ne semble pas fonctionner pour l'instant.
-_______________________
+## Menus (barre du haut)
 
+### Fichier
+- Quitter
 
-2.1.7
+### Outils — raccourcis Windows natifs
+- Panneau de configuration
+- Gérer l'ordinateur
+- Gestionnaire des tâches
+- Programmes et fonctionnalités
+- Windows Update
+- Connexions réseau
 
-Correction du lien vers psexec.exe pour les commandes cmd a distance
+### Système — raccourcis Windows natifs
+- Explorateur, msinfo32, PowerShell, regedit, services.msc, msconfig, dossier Démarrage
+- **Tweak ChrisTitus**
+  - Crée un fichier `.ps1` temporaire dans `%TEMP%` contenant :
+    ```
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+    irm https://christitus.com/win | iex
+    ```
+  - Lance via `ShellExecuteW(None, "runas", "powershell.exe", "-NoProfile -ExecutionPolicy Bypass -File [ps1]")` (demande UAC)
 
-Enlever les boutons de tweak windows deja disponible dans auto setup
+### Aide
+- Release Notes : contenu distant affiché dans une fenêtre
+- Téléchargements : ouvre `kpi-tech.ca/launcher/telechargements.html`
 
-Deplacer les boutons de la barre de gauche pour un meilleur classement
+---
 
-Ajout et correction de description
+## Section Setup (menu gauche)
 
-_______________________
+### Auto Setup
 
-2.1.6
+#### 🖥️ Config PC — Poste Standard
 
-Ajout d'un popup lorsqu'une nouvelle version est disponible.
-_______________________
+Fenêtre de progression avec étapes à cocher. S'exécutent dans l'ordre.
 
+| Étape | Commandes exactes |
+|---|---|
+| Tweak barre des tâches | Registre HKCU :<br>`Explorer\EnableAutoTray = 0`<br>`Policies\Explorer\DisableNotificationCenter = 1`<br>`PushNotifications\ToastEnabled = 0`<br>`Search\SearchboxTaskbarMode = 0`<br>`Explorer\Advanced\ShowTaskViewButton = 0`<br>`Explorer\Advanced\TaskbarGlomLevel = 2`<br>Win11 : `TaskbarAl = 0`, `TaskbarDa = 0`<br>Win10 : `Feeds\ShellFeedsTaskbarViewMode = 2`<br>PowerShell : supprime les raccourcis épinglés sauf Explorateur/Edge |
+| Désactiver notifications | Registre HKCU :<br>`PushNotifications\ToastEnabled = 0`<br>`ContentDeliveryManager\SubscribedContent-310093Enabled = 0`<br>`ContentDeliveryManager\SubscribedContent-338389Enabled = 0`<br>`ContentDeliveryManager\SoftLandingEnabled = 0`<br>`UserProfileEngagement\ScoobeSystemSettingEnabled = 0` |
+| Désactiver UAC | Registre HKLM `System\CurrentControlSet\Control\Lsa` :<br>`EnableLUA = 0`<br>`ConsentPromptBehaviorAdmin = 0`<br>`PromptOnSecureDesktop = 0` |
+| Créer utilisateur `admin` | `net user "admin" "veloce123" /add`<br>`net user "admin" /active:yes`<br>`net localgroup Administrators "admin" /add`<br>`net localgroup Administrateurs "admin" /add`<br>`wmic useraccount where name="admin" set PasswordExpires=False`<br>`net user "admin" /expires:never`<br>+ `net accounts /lockoutthreshold:0 /lockoutduration:0 /lockoutwindow:0` |
+| Créer utilisateur `kpitech` | Mêmes commandes avec `kpitech` / `kpitech123` (sans admin) |
+| Auto logon admin | Registre HKLM `SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon` :<br>`AutoAdminLogon = "1"`<br>`DefaultUserName = "admin"`<br>`DefaultPassword = "veloce123"` |
+| Renommer le PC | PowerShell : `rename-computer -newname "[NOM]" -force` |
+| Installation logiciels | 3 tentatives dans l'ordre :<br>1. `winget install --id=[ID] --silent --accept*`<br>2. `choco install [pkg] -y` (installe Chocolatey si absent)<br>3. Téléchargement direct + installeur silencieux depuis site officiel |
+| Configuration VNC | `sc config tvnserver start= auto`<br>`net stop tvnserver`<br>Registre HKLM `SOFTWARE\TightVNC\Server` :<br>`Password = 0x5d,0xd9,0xd3,0x3a,0x0c,0xed,0x17,0xdb` (DES de "Log1tech")<br>`net start tvnserver` |
+| Redémarrage automatique | `shutdown /r /t 10` |
 
-2.1.5
+---
 
-Correction de la vitesse de telechargement de la nouvelle version.
+#### 💳 Station Veloce
 
-La nouvelle version demarre maintenant apres le telechargement, au lieu de l'ancienne.
-_______________________
+**Paramètres demandés :** nom du serveur réseau (ex: `SV`) + numéro de station (ex: `1` → formaté `01`)
 
+| Étape | Commandes exactes |
+|---|---|
+| Installation Veloce | `ShellExecuteW("runas", "\\[SERVEUR]\veloce\stat[XX]\install\install (WSXX).exe")` |
+| Raccourci bureau | PowerShell `WScript.Shell.CreateShortcut("...\station X.lnk")` pointant vers `\\[SERVEUR]\veloce\stat[XX]\Veloce WS Starter.exe` |
+| Raccourci Démarrage | PowerShell `WScript.Shell.CreateShortcut` dans `shell:startup` |
+| Clé registre réseau | HKLM `SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters\DirectoryCacheLifetime = 0` |
+| Nettoyage | `os.remove` du raccourci `Veloce WS Starter.exe` sur le bureau |
+| Tweaks optionnels | Mêmes étapes que Config PC selon les cases cochées |
 
-2.1.4
+---
 
-Ajout de l'affichage des nouveautes lors des mises a jour.
-_______________________
+### Activer Windows
 
+| Élément | Détail |
+|---|---|
+| Commande affichée | `irm https://get.activated.win \| iex` (non modifiable) |
+| Exécution | PowerShell : `-NoProfile -ExecutionPolicy Bypass -Command "irm https://get.activated.win \| iex"` |
 
-2.1.3
+---
 
-Remontee du bouton de lancement dans Auto Config / Config PC.
+### Gérer les Utilisateurs
 
-Ajout de l'installation de Chrome via Ninite.
+| Action | Commandes exactes |
+|---|---|
+| Afficher les utilisateurs | `net user` |
+| Créer un utilisateur | `net user "[nom]" "[mdp]" /add`<br>`net user "[nom]" /active:yes`<br>Si admin : `net localgroup Administrators "[nom]" /add` + `net localgroup Administrateurs "[nom]" /add`<br>`wmic useraccount where name="[nom]" set PasswordExpires=False`<br>`net user "[nom]" /expires:never`<br>`net accounts /lockoutthreshold:0 /lockoutduration:0 /lockoutwindow:0` |
+| Presets rapides | Remplissent le formulaire : `admin / veloce123` (admin) et `kpitech / Log1tech` (admin) |
+| Vérifier auto-login | Lit HKLM `Winlogon\AutoAdminLogon` et `DefaultUserName` |
+| Activer auto-login | HKLM `Winlogon` : `AutoAdminLogon = "1"`, `DefaultUserName = "[nom]"`, `DefaultPassword = "[mdp]"` |
+| Désactiver auto-login | HKLM `Winlogon` : `AutoAdminLogon = "0"`, supprime `DefaultPassword` |
 
-Ajout du numero de version sur la page de login.
-_______________________
+---
 
+### Adresse IP
 
+| Action | Commandes exactes |
+|---|---|
+| Détecter les interfaces | `psutil.net_if_addrs()` + `netsh interface ip show config` |
+| Passer en DHCP | `netsh interface ipv4 set address name="[X]" source=dhcp`<br>`netsh interface ipv4 set dns name="[X]" source=dhcp` |
+| IP statique | `netsh interface ipv4 set address name="[X]" static [IP] [MASQUE] [GW]`<br>(sans GW si vide)<br>`netsh interface ipv4 set dns name="[X]" static [DNS1]`<br>`netsh interface ipv4 add dns name="[X]" [DNS2] index=2` |
+| Ouvrir propriétés | `rundll32.exe shell32.dll,Control_RunDLL ncpa.cpl` → propriétés de la carte |
 
+---
 
+## Section Système/Windows (menu gauche)
 
+### Infos Système
 
+| Info | Source |
+|---|---|
+| Nom PC, OS, version, architecture | `socket.gethostname()`, `platform.system()`, `platform.release()`, `platform.version()` |
+| CPU modèle | `wmic cpu get name` |
+| CPU cœurs / fréquence / usage | `psutil.cpu_count()`, `psutil.cpu_freq()`, `psutil.cpu_percent(interval=1)` |
+| RAM | `psutil.virtual_memory()` |
+| Disques | `psutil.disk_partitions()` + `psutil.disk_usage()` |
 
+---
 
-_______________________
-_______________________
-_______________________
+### Renommer le PC
 
-## 🎯 Fonctionnalités principales
+| Élément | Commande |
+|---|---|
+| Renommage | PowerShell : `rename-computer -newname "[NOM]" -force` |
+| Redémarrage proposé | `shutdown /r /t 0` |
 
-### 📊 Système et Windows
+---
 
-#### Informations système
-- Affichage détaillé des spécifications matérielles (CPU, RAM, disques)
-- Informations sur le système d'exploitation
-- Liste des utilisateurs Windows
-- État des connexions réseau
-- Monitoring en temps réel
+### Tweaks Windows
 
-#### Gestion utilisateurs
-- Création de nouveaux utilisateurs Windows
-- Configuration avec connexion automatique
-- Gestion des droits et permissions
-- Mot de passe personnalisable
+| Bouton | Commande exacte |
+|---|---|
+| Désinstaller KB5064081 | `wusa /uninstall /kb:5064081 /norestart` (fenêtre native Windows) |
+| Désinstaller une MAJ | Saisie du numéro KB → `wusa /uninstall /kb:[XXXXX] /norestart` (même comportement) |
+| Tweak ChrisTitus | Même mécanisme que le menu Système (ps1 temp + ShellExecuteW runas) |
+| Wallpaper | `ctypes.windll.user32.SystemParametersInfoW(20, 0, "[chemin]", 3)` |
 
-#### Administration Windows
-- **Activation Windows** : Script d'activation automatique
-- **Renommer le PC** : Renommage du poste avec redémarrage automatique
-- **Tweaks Windows** :
-  - Désactivation des notifications Windows 10/11
-  - Masquage de la zone de recherche (barre des tâches)
-  - Masquage de l'icône Task View
-  - Centrage des icônes de la barre des tâches (Windows 11)
-  - Configuration des heures actives (Windows Update)
+---
 
-### ⚙️ Auto Setup
+### Commandes personnalisées (CMD)
 
-#### Configuration automatisée de stations
-- Setup complet de stations Veloce en un clic
-- Configuration automatique de :
-  - Nom du PC selon les standards
-  - Raccourcis bureau (VELBO/VELSRV)
-  - Fond d'écran personnalisé
-  - Tweaks Windows standards
-- Vérification de connectivité réseau
-- Journalisation détaillée de chaque étape   et plus....
-### 🌐 Réseau
-
-#### Diagnostics réseau
-- **Vérifier port TCP 40000** : Test de connectivité pour services réseau
-- **Voir mots de passe WiFi** : Récupération des profils WiFi sauvegardés
-- **Configuration IP** : Outil visuel pour configurer IP fixe/DHCP
-  - Sélection de la carte réseau
-  - Configuration IP, masque, passerelle
-  - Configuration DNS
-  - Ouverture directe des propriétés IPv4 Windows
-
-
-### 🖨️ Imprimantes
-
-#### Tests d'impression
-- **Test TCP/IP** : Test d'impression réseau sur imprimantes ESC/P
-  - Configuration IP et port personnalisables
-  - Impression de tickets de test
-  - Détection d'imprimantes en ligne
-- **Test port série (COM)** : Test d'impression via port série
-  - Détection automatique des ports COM disponibles
-  - Configuration baudrate, parité, bits de données
-  - Support imprimantes thermiques ESC/P
-
-
-### 🔄 Système de mise à jour
-
-#### Mises à jour automatiques
-- Vérification automatique au démarrage
-- Notification visuelle des mises à jour disponibles
-- Téléchargement en un clic avec barre de progression
-- Installation automatique et redémarrage de l'application
-
-## 📦 Installation pour python sans le exe
-### Prérequis
-- **Système** : Windows 10/11
-- **Python** : 3.10 ou supérieur (pour développement)
-- **Droits** : Privilèges administrateur pour certaines fonctions
-
-**Installer les dépendances**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-**Lancer l'application**
-   ```bash
-   python main.py
-   ```
-
-### Mode production (exe)
-
-1. **Télécharger** l'exécutable `Sys-Tools.exe`
-2. **Double-cliquer** pour lancer
-3. Aucune installation requise
-
-## 🚀 Utilisation
-
-### Démarrage
-- Lancez `Sys-Tools.exe` ou `python main.py`
-- Entrez le mot de passe d'accès
-- L'interface principale s'affiche
-
-### Navigation
-- **Menu de gauche** : Sélectionnez la catégorie d'outils
-- **Zone centrale** : Options et boutons de la fonctionnalité sélectionnée
-- **Console** : Affichage en temps réel des opérations et résultats
-- **Menu supérieur** : Accès rapide aux outils Windows et téléchargements
-
-## 📁 Structure du projet
-
-```
-Outils-Systeme/
-├── main.py                    # Point d'entrée principal
-├── requirements.txt           # Dépendances Python
-├── version.txt               # Numéro de version
-├── update_config.txt         # URLs de mise à jour
-├── README.md
-├── utils/
-│   ├── system_utils.py       # Utilitaires système (admin, paths)
-│   └── update_manager.py     # Gestion des mises à jour
-├── services/
-│   ├── printer_service.py    # Gestion imprimantes ESC/P
-│   ├── windows_service.py    # Tweaks et configuration Windows
-│   └── network_service.py    # Opérations réseau
-└── ui/
-    ├── password_dialog.py    # Dialogue d'authentification
-    └── main_window.py        # Interface principale (4900+ lignes)
-```
-
-## 🔧 Configuration
-
-### Changer le numéro de version
-1. Éditez `version.txt`
-2. Modifiez le numéro (format: x.y.z, ex: 2.2.0)
-3. Sauvegardez
-4. Recompilez l'application
-
-### Configurer les URLs de mise à jour
-1. Éditez `update_config.txt`
-2. Modifiez les URLs :
-   ```
-   VERSION_URL=https://votre-serveur.com/version.txt
-   DOWNLOAD_URL=https://votre-serveur.com/Sys-Tools.exe
-   ```
-3. Sauvegardez et recompilez
-
-
-## 🛠️ Compilation
-
-### PyInstaller (recommandé)
+| Champ | Usage |
+|---|---|
+| Hôte distant vide | Exécution locale : `subprocess.run([cmd], shell=True)` |
+| Hôte distant renseigné | Via PsExec : `psexec.exe \\[hôte] -u [user] -p [pwd] cmd /c [commande]` |
+| Commandes rapides | Remplissent le champ : `systeminfo`, `tasklist`, `shutdown /r /t 0`, `cmd.exe` |
+
+---
+
+## Section Réseau (menu gauche)
+
+### Vérifier port TCP
+
+| Étape | Détail |
+|---|---|
+| IP publique | `GET https://api.ipify.org?format=json` (fallback : `https://api.my-ip.io/ip`) |
+| Test port externe | `GET https://api.portchecker.co/check?host=[ip]&port=[port]` |
+| Fallback | `POST https://ports.yougetsignal.com/check-port.php` avec `remoteAddress=[ip]&portNumber=[port]` |
+
+> Teste l'accessibilité du port **depuis internet** (pas en local).
+
+---
+
+### Voir mots de passe WiFi
+
+| Commande | But |
+|---|---|
+| `netsh wlan show profiles` | Liste tous les profils WiFi enregistrés |
+| `netsh wlan show profile name="[X]" key=clear` | Extrait le mot de passe en clair pour chaque profil |
+
+---
+
+## Section Imprimantes (menu gauche)
+
+### Test impression
+
+| Mode | Commande/mécanisme |
+|---|---|
+| TCP/IP | `socket.create_connection((IP, port))` → envoi bytes ESC/P |
+| COM (série) | `serial.Serial(port, baudrate)` → envoi bytes ESC/P (`pyserial`) |
+| Couleur rouge | Commande ESC/P : `\x1b\x72\x01` (sélection couleur rouge) |
+| Retour noir | Commande ESC/P : `\x1b\x72\x00` |
+
+---
+
+## Fichiers de configuration
+
+| Fichier | Rôle |
+|---|---|
+| `version.txt` | Version locale (ex: `2.2.3`) — comparée au serveur pour détecter les MAJ |
+| `update_config.txt` | `VERSION_URL` et `DOWNLOAD_URL` pour le système de mise à jour |
+| `main.py` ligne `PASSWORDS` | Mots de passe acceptés : `["Log1tech", "Axios1694"]` |
+| `assets/wallpapers/` | Images `.jpg/.png/.bmp` disponibles dans le sélecteur de fond d'écran |
+
+---
+
+## Lancement et compilation
+
 ```bash
+# Développement
+pip install -r requirements.txt
+python main.py
+
+# Compilation exe
 pyinstaller --onefile --noconsole --clean \
     --icon=mainicon2.ico \
     --add-data "version.txt;." \
     --add-data "update_config.txt;." \
-    --add-data "mainicon2.ico;." \
     --add-data "assets;assets" \
     --hidden-import=customtkinter \
     --hidden-import=PIL \
     --hidden-import=psutil \
     --hidden-import=pyserial \
-    --name "Outils-Systeme" \
+    --name "Sys-Tools" \
     main.py
 ```
 
-L'exécutable sera créé dans `dist/Sys-Tools.exe`
+---
 
-**Options importantes** :
-- `--clean` : Vide le cache PyInstaller (obligatoire pour voir les changements de version)
-- `--onefile` : Un seul fichier exe (tous les fichiers sont embedés)
-- `--noconsole` : Pas de fenêtre console
+## Structure des fichiers
 
-
-
-## ⚠️ Avertissements
-
-- **Privilèges administrateur** : La plupart des fonctions nécessitent des droits admin
-- **Modifications système** : Les tweaks modifient le registre Windows
-- **Code distant** : Certaines fonctions téléchargent et exécutent du code externe
-- **Configuration réseau** : La modification d'IP peut couper la connexion
-- **Windows uniquement** : Application conçue exclusivement pour Windows
-
-## 🐛 Dépannage
-
-### L'application ne démarre pas
-- Vérifiez les droits administrateur
-- Assurez-vous que Python 3.10+ est installé
-- Vérifiez que toutes les dépendances sont installées
-
-### La mise à jour échoue
-- Vérifiez votre connexion Internet
-- Assurez-vous que les URLs dans `update_config.txt` sont correctes
-- Vérifiez que le fichier distant est accessible
-- Fermez complètement l'application avant de réessayer
-
-### Les tweaks Windows ne fonctionnent pas
-- Exécutez l'application en tant qu'administrateur
-- Vérifiez la version de Windows (certains tweaks sont spécifiques à Win10/11)
-- Redémarrez Windows après avoir appliqué les tweaks
-
-## 📝 Notes de développement
-
-### Ajouter une nouvelle fonctionnalité
-1. **Service métier** : Créer les fonctions dans `services/`
-2. **Interface** : Ajouter l'UI dans `ui/main_window.py`
-3. **Menu** : Ajouter l'entrée dans `menu_items`
-4. **Tests** : Tester en mode développement
-5. **Compilation** : Compiler et distribuer
-
-### Standards de code
-- **PEP 8** : Style Python standard
-- **Docstrings** : Documentation de toutes les fonctions
-- **Gestion d'erreurs** : Try-except avec logs
-- **Encodage** : UTF-8 pour tous les fichiers
-
-## 📄 Licence
-
-Usage interne uniquement.
-
-## 👥 Support
-
-Pour questions ou problèmes :
-- Consultez ce README
-- Vérifiez les logs de la console
-- Contactez l'équipe de développement
+```
+├── main.py                  # Authentification + lancement
+├── version.txt
+├── update_config.txt
+├── assets/
+│   └── wallpapers/
+├── utils/
+│   ├── system_utils.py      # is_admin(), get_base_path(), relaunch_as_admin()
+│   └── update_manager.py    # check_for_updates(), download_update()
+├── services/
+│   ├── printer_service.py   # ESC/P TCP et COM
+│   ├── windows_service.py   # Tweaks, registre, utilisateurs
+│   └── network_service.py   # Port TCP, WiFi, TeamViewer/AnyDesk
+└── ui/
+    ├── password_dialog.py
+    └── main_window.py       # Toute l'interface (~6000 lignes)
+```
