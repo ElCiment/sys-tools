@@ -22,9 +22,9 @@ from services.windows_service import (
     disable_windows_notifications, apply_wallpaper, rename_computer,
     add_windows_user, create_veloce_shortcuts, restore_context_menu_win11)
 from services.network_service import check_tcp_port, get_wifi_passwords, get_teamviewer_id, get_anydesk_id, show_wifi_passwords
-from utils.update_manager import (check_for_updates, download_update, 
-                                   install_update, get_remote_version,
-                                   LOCAL_VERSION)
+from utils.update_manager import (check_for_updates, download_update,
+                                  install_update, get_remote_version,
+                                  LOCAL_VERSION)
 
 
 class ToolsApp(ctk.CTk):
@@ -132,6 +132,10 @@ class ToolsApp(ctk.CTk):
         system_menu.add_command(
             label="🗂️ Dossier Démarrage",
             command=lambda: os.system("explorer shell:startup"))
+        system_menu.add_separator()
+        system_menu.add_command(
+            label="🛠️ Tweak ChrisTitus",
+            command=self._run_christitus_tweak)
         menubar.add_cascade(label="Système", menu=system_menu)
 
         # Menu Aide
@@ -219,8 +223,8 @@ class ToolsApp(ctk.CTk):
 
         # Version (chargée depuis le serveur)
         self.version_label = ctk.CTkLabel(version_frame,
-                               text=f"Version {LOCAL_VERSION}",
-                               font=ctk.CTkFont(size=12))
+                                          text=f"Version {LOCAL_VERSION}",
+                                          font=ctk.CTkFont(size=12))
         self.version_label.pack(side="left", padx=(0, 10))
 
         # Bouton vérifier mises à jour (à côté de la version)
@@ -281,22 +285,18 @@ class ToolsApp(ctk.CTk):
         # Menu avec option de couleur personnalisée
         menu_items = [
             ("⚙️ Setup", None),
-            ("Auto Setup", "auto_setup", "#eab308"),   # couleur spéciale
+            ("Auto Setup", "auto_setup", "#eab308"),  # couleur spéciale
             ("Activer Windows", "activate_windows"),
             ("Gérer les Utilisateurs", "manage_users"),
             ("Adresse IP", "ip_config"),
-
             ("📊 Système/Windows", None),
             ("Infos Système", "show_system_info"),
             ("Renommer le PC", "rename_pc"),
             ("Tweaks Windows", "tweak_windows"),
             ("Commandes personnalisées (CMD)", "custom_commands"),
-
             ("🌐 Réseau", None),
             ("Vérifier port TCP 40000", "check_port"),
             ("Voir mots de passe WiFi", "show_wifi_passwords"),
-
-
             ("🖨️ Imprimantes", None),
             ("Test impression", "print_test"),
         ]
@@ -326,8 +326,7 @@ class ToolsApp(ctk.CTk):
                     fg_color=custom_color if custom_color else "#c03a3a",
                     hover_color=custom_color if custom_color else "#e05454",
                     text_color="black" if custom_color else "white",
-                    command=lambda k=key: self.show_function(k)
-                )
+                    command=lambda k=key: self.show_function(k))
                 b.pack(padx=12, pady=6, anchor="n")
 
     def _create_main_area(self):
@@ -633,13 +632,13 @@ class ToolsApp(ctk.CTk):
                      font=ctk.CTkFont(weight="bold")).pack(anchor="w",
                                                            pady=(0, 6))
 
-       # ctk.CTkButton(f,
-       #               text="Appliquer Tweaks Taskbar",
-       #               width=220,
-       #               fg_color="#4c84e0",
-       #               hover_color="#2e62c9",
-       #               command=self._run_tweak_taskbar).pack(anchor="w",
-       #                                                     pady=(0, 8))
+        # ctk.CTkButton(f,
+        #               text="Appliquer Tweaks Taskbar",
+        #               width=220,
+        #               fg_color="#4c84e0",
+        #               hover_color="#2e62c9",
+        #               command=self._run_tweak_taskbar).pack(anchor="w",
+        #                                                     pady=(0, 8))
         #ctk.CTkButton(f,
         #              text="Désactiver notifications Windows",
         #              width=260,
@@ -655,13 +654,29 @@ class ToolsApp(ctk.CTk):
         #              hover_color="#2e62c9",
         #              command=self._run_restore_menu).pack(anchor="w",
         #                                                   pady=(0, 20))
-        ctk.CTkButton(f,
+        kb_frame = ctk.CTkFrame(f, fg_color="transparent")
+        kb_frame.pack(anchor="w", pady=(0, 10))
+        ctk.CTkButton(kb_frame,
                       text="🧩 Désinstaller KB5064081",
-                      width=240,
+                      width=230,
                       fg_color="#e05454",
                       hover_color="#c03a3a",
-                      command=self._run_uninstall_kb).pack(anchor="w",
-                                                           pady=(0, 20))
+                      command=self._run_uninstall_kb).pack(side="left",
+                                                           padx=(0, 8))
+        ctk.CTkButton(kb_frame,
+                      text="🗑️ Désinstaller une MAJ",
+                      width=220,
+                      fg_color="#c0392b",
+                      hover_color="#922b21",
+                      command=self._run_uninstall_custom_kb).pack(side="left")
+
+        ctk.CTkButton(f,
+                      text="🛠️ Tweak ChrisTitus",
+                      width=240,
+                      fg_color="#7d3c98",
+                      hover_color="#6c3483",
+                      command=self._run_christitus_tweak).pack(anchor="w",
+                                                               pady=(0, 20))
 
         # Sélecteur de wallpaper
         ctk.CTkLabel(f,
@@ -738,14 +753,13 @@ class ToolsApp(ctk.CTk):
                      text="Activer Windows:",
                      font=ctk.CTkFont(weight="bold")).pack(anchor="w",
                                                            pady=(0, 6))
-                                                           
-        ctk.CTkLabel(f,
-                     text="A l'ouverture du terminal appuyez sur 1 (HWID) pour activer Windows ",
-                     font=ctk.CTkFont(size=15, weight="bold"),
-                     text_color="#eab308").pack(anchor="w", pady=(0, 15))   
 
-
-                                                           
+        ctk.CTkLabel(
+            f,
+            text=
+            "A l'ouverture du terminal appuyez sur 1 (HWID) pour activer Windows ",
+            font=ctk.CTkFont(size=15, weight="bold"),
+            text_color="#eab308").pack(anchor="w", pady=(0, 15))
 
         fixed_cmd = 'irm https://get.activated.win| iex'
         ctk.CTkLabel(f,
@@ -897,6 +911,57 @@ class ToolsApp(ctk.CTk):
         """Désinstalle KB5064081"""
         threading.Thread(target=lambda: uninstall_kb5064081(self.log),
                          daemon=True).start()
+
+    def _run_uninstall_custom_kb(self):
+        """Demande le numéro KB et désinstalle la mise à jour correspondante"""
+        import tkinter.simpledialog as sd
+        import tkinter.messagebox as mb
+
+        kb_num = sd.askstring(
+            "Désinstaller une mise à jour",
+            "Entrez le numéro de la mise à jour à désinstaller :\n(ex: KB5034441  ou  5034441)",
+            parent=self
+        )
+        if not kb_num:
+            return
+
+        kb_num = kb_num.strip().upper()
+        if not kb_num.startswith("KB"):
+            kb_num = "KB" + kb_num
+
+        confirm = mb.askyesno(
+            "Confirmation",
+            f"Désinstaller la mise à jour {kb_num} ?\n\n"
+            "Un redémarrage peut être nécessaire.",
+            icon="warning",
+            parent=self
+        )
+        if not confirm:
+            return
+
+        def worker():
+            self.log(f"▶ Désinstallation de {kb_num}...")
+            temp_dir = os.environ.get('TEMP', 'C:\\Windows\\Temp')
+            kb_only = kb_num.replace("KB", "").replace("kb", "")
+            cmd = f'wusa /uninstall /kb:{kb_only} /norestart'
+            try:
+                result = subprocess.run(
+                    cmd, shell=True, capture_output=True, text=True,
+                    timeout=300, cwd=temp_dir
+                )
+                if result.stdout:
+                    for ln in result.stdout.splitlines():
+                        if ln.strip():
+                            self.log(ln)
+                if result.stderr:
+                    for ln in result.stderr.splitlines():
+                        if ln.strip():
+                            self.log(ln)
+                self.log(f"wusa terminé (code {result.returncode})")
+            except Exception as e:
+                self.log(f"❌ Erreur: {e}")
+
+        threading.Thread(target=worker, daemon=True).start()
 
     def _run_rename_pc(self):
         """Renomme le PC"""
@@ -1194,9 +1259,10 @@ class ToolsApp(ctk.CTk):
 
         ctk.CTkLabel(autologin_frame,
                      text="🔐 Connexion automatique Windows",
-                     font=ctk.CTkFont(size=13, weight="bold")).pack(anchor="w",
-                                                                    padx=10,
-                                                                    pady=(10, 5))
+                     font=ctk.CTkFont(size=13,
+                                      weight="bold")).pack(anchor="w",
+                                                           padx=10,
+                                                           pady=(10, 5))
 
         # Afficher l'utilisateur auto-login actuel
         self.autologin_status_label = ctk.CTkLabel(autologin_frame,
@@ -1218,26 +1284,32 @@ class ToolsApp(ctk.CTk):
 
         ctk.CTkLabel(config_frame,
                      text="Configurer la connexion automatique:",
-                     font=ctk.CTkFont(size=11, weight="bold")).grid(row=0, column=0,
-                                                                    columnspan=2,
-                                                                    sticky="w",
-                                                                    padx=10,
-                                                                    pady=(8, 5))
+                     font=ctk.CTkFont(size=11,
+                                      weight="bold")).grid(row=0,
+                                                           column=0,
+                                                           columnspan=2,
+                                                           sticky="w",
+                                                           padx=10,
+                                                           pady=(8, 5))
 
         if not hasattr(self, 'autologin_user_var'):
             self.autologin_user_var = tk.StringVar(value="")
             self.autologin_pass_var = tk.StringVar(value="")
 
-        ctk.CTkLabel(config_frame, text="Utilisateur:").grid(row=1, column=0,
+        ctk.CTkLabel(config_frame, text="Utilisateur:").grid(row=1,
+                                                             column=0,
                                                              sticky="w",
-                                                             padx=10, pady=5)
+                                                             padx=10,
+                                                             pady=5)
         ctk.CTkEntry(config_frame,
                      textvariable=self.autologin_user_var,
                      width=200).grid(row=1, column=1, padx=10, pady=5)
 
-        ctk.CTkLabel(config_frame, text="Mot de passe:").grid(row=2, column=0,
+        ctk.CTkLabel(config_frame, text="Mot de passe:").grid(row=2,
+                                                              column=0,
                                                               sticky="w",
-                                                              padx=10, pady=5)
+                                                              padx=10,
+                                                              pady=5)
         ctk.CTkEntry(config_frame,
                      textvariable=self.autologin_pass_var,
                      width=200,
@@ -1294,22 +1366,27 @@ class ToolsApp(ctk.CTk):
 
     def _check_autologin(self):
         """Vérifie l'utilisateur configuré pour l'auto-login"""
+
         def worker():
             try:
                 import winreg
-                key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                                    r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
-                                    0, winreg.KEY_READ)
+                key = winreg.OpenKey(
+                    winreg.HKEY_LOCAL_MACHINE,
+                    r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
+                    0, winreg.KEY_READ)
 
                 try:
-                    auto_enabled, _ = winreg.QueryValueEx(key, "AutoAdminLogon")
+                    auto_enabled, _ = winreg.QueryValueEx(
+                        key, "AutoAdminLogon")
                     username, _ = winreg.QueryValueEx(key, "DefaultUserName")
 
                     if auto_enabled == "1":
                         status_text = f"✅ Auto-login ACTIVÉ pour: {username}"
                         color = "#10b981"
                         self.autologin_user_var.set(username)
-                        self.log(f"ℹ️ Auto-login activé pour l'utilisateur: {username}")
+                        self.log(
+                            f"ℹ️ Auto-login activé pour l'utilisateur: {username}"
+                        )
                     else:
                         status_text = "⚠️ Auto-login DÉSACTIVÉ"
                         color = "#f59e0b"
@@ -1327,8 +1404,9 @@ class ToolsApp(ctk.CTk):
                 self.log(f"❌ Erreur vérification auto-login: {e}")
 
             # Mettre à jour le label dans le thread principal
-            self.after(0, lambda: self.autologin_status_label.configure(
-                text=status_text, text_color=color))
+            self.after(
+                0, lambda: self.autologin_status_label.configure(
+                    text=status_text, text_color=color))
 
         threading.Thread(target=worker, daemon=True).start()
 
@@ -1346,24 +1424,30 @@ class ToolsApp(ctk.CTk):
                 import winreg
                 self.log(f"▶ Configuration auto-login pour: {username}")
 
-                key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                                    r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
-                                    0, winreg.KEY_SET_VALUE)
+                key = winreg.OpenKey(
+                    winreg.HKEY_LOCAL_MACHINE,
+                    r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
+                    0, winreg.KEY_SET_VALUE)
 
                 winreg.SetValueEx(key, "AutoAdminLogon", 0, winreg.REG_SZ, "1")
-                winreg.SetValueEx(key, "DefaultUserName", 0, winreg.REG_SZ, username)
+                winreg.SetValueEx(key, "DefaultUserName", 0, winreg.REG_SZ,
+                                  username)
                 if password:
-                    winreg.SetValueEx(key, "DefaultPassword", 0, winreg.REG_SZ, password)
+                    winreg.SetValueEx(key, "DefaultPassword", 0, winreg.REG_SZ,
+                                      password)
 
                 winreg.CloseKey(key)
 
                 self.log(f"✅ Auto-login activé pour: {username}")
-                self.log("⚠️ L'utilisateur se connectera automatiquement au prochain démarrage")
+                self.log(
+                    "⚠️ L'utilisateur se connectera automatiquement au prochain démarrage"
+                )
 
                 # Mettre à jour le statut
-                self.after(0, lambda: self.autologin_status_label.configure(
-                    text=f"✅ Auto-login ACTIVÉ pour: {username}",
-                    text_color="#10b981"))
+                self.after(
+                    0, lambda: self.autologin_status_label.configure(
+                        text=f"✅ Auto-login ACTIVÉ pour: {username}",
+                        text_color="#10b981"))
 
             except Exception as e:
                 self.log(f"❌ Erreur activation auto-login: {e}")
@@ -1371,16 +1455,45 @@ class ToolsApp(ctk.CTk):
 
         threading.Thread(target=worker, daemon=True).start()
 
+    def _enable_autologon_for_user(self, username, password, log_fn):
+        """Active l'auto-login Windows pour un utilisateur spécifique (utilisé par Auto Setup)"""
+        try:
+            import winreg
+            log_fn(f"▶ Configuration auto-logon pour: {username}")
+
+            key = winreg.OpenKey(
+                winreg.HKEY_LOCAL_MACHINE,
+                r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon", 0,
+                winreg.KEY_SET_VALUE)
+
+            winreg.SetValueEx(key, "AutoAdminLogon", 0, winreg.REG_SZ, "1")
+            winreg.SetValueEx(key, "DefaultUserName", 0, winreg.REG_SZ,
+                              username)
+            winreg.SetValueEx(key, "DefaultPassword", 0, winreg.REG_SZ,
+                              password)
+
+            winreg.CloseKey(key)
+
+            log_fn(f"✅ Auto-logon activé pour: {username}")
+            log_fn(
+                "  L'utilisateur se connectera automatiquement au démarrage")
+
+        except Exception as e:
+            log_fn(f"❌ Erreur activation auto-logon: {e}")
+            log_fn("  Nécessite les droits administrateur")
+
     def _disable_autologin(self):
         """Désactive l'auto-login Windows"""
+
         def worker():
             try:
                 import winreg
                 self.log("▶ Désactivation de l'auto-login...")
 
-                key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                                    r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
-                                    0, winreg.KEY_SET_VALUE)
+                key = winreg.OpenKey(
+                    winreg.HKEY_LOCAL_MACHINE,
+                    r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
+                    0, winreg.KEY_SET_VALUE)
 
                 winreg.SetValueEx(key, "AutoAdminLogon", 0, winreg.REG_SZ, "0")
 
@@ -1393,12 +1506,14 @@ class ToolsApp(ctk.CTk):
                 winreg.CloseKey(key)
 
                 self.log("✅ Auto-login désactivé")
-                self.log("ℹ️ Windows demandera un mot de passe au prochain démarrage")
+                self.log(
+                    "ℹ️ Windows demandera un mot de passe au prochain démarrage"
+                )
 
                 # Mettre à jour le statut
-                self.after(0, lambda: self.autologin_status_label.configure(
-                    text="⚠️ Auto-login DÉSACTIVÉ",
-                    text_color="#f59e0b"))
+                self.after(
+                    0, lambda: self.autologin_status_label.configure(
+                        text="⚠️ Auto-login DÉSACTIVÉ", text_color="#f59e0b"))
 
             except Exception as e:
                 self.log(f"❌ Erreur désactivation auto-login: {e}")
@@ -1415,13 +1530,49 @@ class ToolsApp(ctk.CTk):
         self.after(
             0, lambda: self.ad_label.configure(text=f"AnyDesk ID: {ad_id}"))
 
+    def _run_christitus_tweak(self):
+        """Lance le script ChrisTitus WinUtil en administrateur"""
+        import tkinter.messagebox as mb
+        result = mb.askyesno(
+            "Tweak ChrisTitus",
+            "Ceci va lancer le script ChrisTitus WinUtil (christitus.com/win) "
+            "dans une fenêtre PowerShell en mode Administrateur.\n\n"
+            "Continuer ?",
+            icon="warning"
+        )
+        if not result:
+            return
+        try:
+            import ctypes
+            temp_dir = os.environ.get('TEMP', os.environ.get('TMP', 'C:\\Windows\\Temp'))
+            ps_path = os.path.join(temp_dir, 'christitus_launch.ps1')
+            with open(ps_path, 'w', encoding='utf-8') as f:
+                f.write("Set-ExecutionPolicy Bypass -Scope Process -Force\n")
+                f.write("irm https://christitus.com/win | iex\n")
+
+            args = f'-NoProfile -ExecutionPolicy Bypass -File "{ps_path}"'
+            ret = ctypes.windll.shell32.ShellExecuteW(
+                None,           # hwnd
+                "runas",        # verbe = élévation admin
+                "powershell.exe",
+                args,
+                temp_dir,       # répertoire de travail
+                1               # SW_SHOWNORMAL
+            )
+            if ret > 32:
+                self.log("🛠️ ChrisTitus WinUtil lancé en administrateur")
+            else:
+                self.log(f"❌ Erreur lancement ChrisTitus (code {ret})")
+        except Exception as e:
+            self.log(f"❌ Erreur lancement ChrisTitus: {e}")
+
     def show_release_notes(self):
         """Ouvre une petite fenêtre pour afficher les notes de version"""
         import requests
         from tkinter import Toplevel
 
         base_path = get_base_path()
-        
+
         # Récupérer la config
         config_path = os.path.join(base_path, "update_config.txt")
         config = {}
@@ -1442,7 +1593,9 @@ class ToolsApp(ctk.CTk):
                 response.raise_for_status()
                 notes_text = response.text.strip()
             except Exception as e:
-                print(f"Impossible de récupérer les notes de version depuis l'URL : {e}")
+                print(
+                    f"Impossible de récupérer les notes de version depuis l'URL : {e}"
+                )
 
         # Si échec ou vide, lire le fichier local
         notes_path = os.path.join(base_path, "notesversion.txt")
@@ -1465,7 +1618,6 @@ class ToolsApp(ctk.CTk):
         text_widget.pack(padx=10, pady=10, fill="both", expand=True)
         text_widget.insert("0.0", notes_text)
         text_widget.configure(state="disabled")  # rendre lecture seule
-
 
     def build_auto_setup_options(self, parent):
         """Page Auto Setup avec 3 boutons qui ouvrent des fenêtres dédiées"""
@@ -1695,18 +1847,24 @@ class ToolsApp(ctk.CTk):
         try:
             import winreg
 
-            log_fn("▶ Désactivation du contrôle de compte utilisateur (UAC)...")
+            log_fn(
+                "▶ Désactivation du contrôle de compte utilisateur (UAC)...")
 
             # Modifier la clé de registre pour UAC
-            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                                r"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System",
-                                0, winreg.KEY_SET_VALUE)
+            key = winreg.OpenKey(
+                winreg.HKEY_LOCAL_MACHINE,
+                r"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System",
+                0, winreg.KEY_SET_VALUE)
             winreg.SetValueEx(key, "EnableLUA", 0, winreg.REG_DWORD, 0)
-            winreg.SetValueEx(key, "ConsentPromptBehaviorAdmin", 0, winreg.REG_DWORD, 0)
-            winreg.SetValueEx(key, "PromptOnSecureDesktop", 0, winreg.REG_DWORD, 0)
+            winreg.SetValueEx(key, "ConsentPromptBehaviorAdmin", 0,
+                              winreg.REG_DWORD, 0)
+            winreg.SetValueEx(key, "PromptOnSecureDesktop", 0,
+                              winreg.REG_DWORD, 0)
             winreg.CloseKey(key)
 
-            log_fn("✓ Clés UAC modifiées (EnableLUA=0, ConsentPromptBehaviorAdmin=0)")
+            log_fn(
+                "✓ Clés UAC modifiées (EnableLUA=0, ConsentPromptBehaviorAdmin=0)"
+            )
             log_fn("✅ UAC désactivé")
             log_fn("⚠️ Redémarrage requis pour appliquer les changements")
 
@@ -1724,25 +1882,42 @@ class ToolsApp(ctk.CTk):
             # Vérifier si le fichier existe
             if not os.path.exists(veloce_path):
                 log_fn(f"⚠️ Fichier non trouvé: {veloce_path}")
-                log_fn("   Le pare-feu sera configuré mais l'application n'est pas installée")
+                log_fn(
+                    "   Le pare-feu sera configuré mais l'application n'est pas installée"
+                )
 
             # Ajouter une règle de pare-feu pour Veloce Backoffice
             cmd = f'netsh advfirewall firewall add rule name="Veloce Backoffice" dir=in action=allow program="{veloce_path}" enable=yes profile=any'
 
-            result = subprocess.run(cmd, capture_output=True, text=True, shell=True, timeout=30)
+            result = subprocess.run(cmd,
+                                    capture_output=True,
+                                    text=True,
+                                    shell=True,
+                                    timeout=30)
 
             if result.returncode == 0:
                 log_fn("✓ Règle de pare-feu ajoutée pour Veloce Backoffice")
-                log_fn("✅ Veloce Backoffice autorisé dans le pare-feu (Public & Privé)")
+                log_fn(
+                    "✅ Veloce Backoffice autorisé dans le pare-feu (Public & Privé)"
+                )
             else:
                 # La règle existe peut-être déjà, essayer de la mettre à jour
-                log_fn("  Règle existante détectée, tentative de mise à jour...")
+                log_fn(
+                    "  Règle existante détectée, tentative de mise à jour...")
                 cmd_update = f'netsh advfirewall firewall set rule name="Veloce Backoffice" new enable=yes profile=any'
-                result_update = subprocess.run(cmd_update, capture_output=True, text=True, shell=True, timeout=30)
+                result_update = subprocess.run(cmd_update,
+                                               capture_output=True,
+                                               text=True,
+                                               shell=True,
+                                               timeout=30)
 
                 if result_update.returncode == 0:
-                    log_fn("✓ Règle de pare-feu mise à jour pour Veloce Backoffice")
-                    log_fn("✅ Veloce Backoffice autorisé dans le pare-feu (Public & Privé)")
+                    log_fn(
+                        "✓ Règle de pare-feu mise à jour pour Veloce Backoffice"
+                    )
+                    log_fn(
+                        "✅ Veloce Backoffice autorisé dans le pare-feu (Public & Privé)"
+                    )
                 else:
                     log_fn("❌ Échec de la configuration du pare-feu")
                     log_fn(f"   Erreur: {result_update.stderr.strip()}")
@@ -1771,7 +1946,9 @@ Get-NetAdapter | ForEach-Object {
 '''
 
             result = subprocess.run(['powershell', '-Command', ps_cmd],
-                                   capture_output=True, text=True, timeout=60)
+                                    capture_output=True,
+                                    text=True,
+                                    timeout=60)
 
             if result.returncode == 0:
                 output_lines = result.stdout.strip().split('\n')
@@ -1784,8 +1961,12 @@ Get-NetAdapter | ForEach-Object {
                 log_fn("   Essai avec méthode alternative...")
 
                 # Méthode alternative via netsh
-                subprocess.run('powercfg /change standby-timeout-ac 0', shell=True, timeout=10)
-                subprocess.run('powercfg /change standby-timeout-dc 0', shell=True, timeout=10)
+                subprocess.run('powercfg /change standby-timeout-ac 0',
+                               shell=True,
+                               timeout=10)
+                subprocess.run('powercfg /change standby-timeout-dc 0',
+                               shell=True,
+                               timeout=10)
                 log_fn("✓ Paramètres d'alimentation réseau modifiés")
 
         except Exception as e:
@@ -1799,7 +1980,11 @@ Get-NetAdapter | ForEach-Object {
 
             # Définir le fuseau horaire sur America/Toronto (Eastern Time)
             cmd_tz = 'tzutil /s "Eastern Standard Time"'
-            result = subprocess.run(cmd_tz, capture_output=True, text=True, shell=True, timeout=10)
+            result = subprocess.run(cmd_tz,
+                                    capture_output=True,
+                                    text=True,
+                                    shell=True,
+                                    timeout=10)
 
             if result.returncode == 0:
                 log_fn("✓ Fuseau horaire défini sur America/Toronto (Eastern)")
@@ -1810,36 +1995,58 @@ Get-NetAdapter | ForEach-Object {
             log_fn("  Synchronisation de l'heure en cours...")
 
             # Arrêter le service W32Time
-            subprocess.run('net stop w32time', capture_output=True, shell=True, timeout=10)
+            subprocess.run('net stop w32time',
+                           capture_output=True,
+                           shell=True,
+                           timeout=10)
 
             # Configurer le service pour démarrer automatiquement
-            subprocess.run('sc config w32time start= auto', capture_output=True, shell=True, timeout=10)
+            subprocess.run('sc config w32time start= auto',
+                           capture_output=True,
+                           shell=True,
+                           timeout=10)
             log_fn("✓ Service de temps configuré en démarrage automatique")
 
             # Redémarrer le service W32Time
-            subprocess.run('net start w32time', capture_output=True, shell=True, timeout=10)
+            subprocess.run('net start w32time',
+                           capture_output=True,
+                           shell=True,
+                           timeout=10)
             log_fn("✓ Service de temps redémarré")
 
             # Enregistrer le service avec le serveur de temps
-            subprocess.run('w32tm /register', capture_output=True, shell=True, timeout=10)
+            subprocess.run('w32tm /register',
+                           capture_output=True,
+                           shell=True,
+                           timeout=10)
 
             # Configurer les serveurs de temps NTP
             time_servers = 'time.windows.com,time.nist.gov,pool.ntp.org'
-            subprocess.run(f'w32tm /config /manualpeerlist:"{time_servers}" /syncfromflags:manual /reliable:YES /update',
-                          capture_output=True, shell=True, timeout=15)
+            subprocess.run(
+                f'w32tm /config /manualpeerlist:"{time_servers}" /syncfromflags:manual /reliable:YES /update',
+                capture_output=True,
+                shell=True,
+                timeout=15)
             log_fn("✓ Serveurs de temps NTP configurés")
 
             # Forcer la resynchronisation immédiate
             result_sync = subprocess.run('w32tm /resync /force',
-                                        capture_output=True, text=True, shell=True, timeout=30)
+                                         capture_output=True,
+                                         text=True,
+                                         shell=True,
+                                         timeout=30)
 
-            if "successfully" in result_sync.stdout.lower() or result_sync.returncode == 0:
+            if "successfully" in result_sync.stdout.lower(
+            ) or result_sync.returncode == 0:
                 log_fn("✓ Heure synchronisée avec succès")
             else:
                 log_fn("⚠️ La synchronisation peut prendre quelques instants")
 
             # Activer la synchronisation automatique
-            subprocess.run('w32tm /config /update', capture_output=True, shell=True, timeout=10)
+            subprocess.run('w32tm /config /update',
+                           capture_output=True,
+                           shell=True,
+                           timeout=10)
             log_fn("✓ Synchronisation automatique activée")
 
             log_fn("✅ Fuseau horaire et synchronisation configurés")
@@ -1856,19 +2063,26 @@ Get-NetAdapter | ForEach-Object {
             ps_cmd = 'Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private'
 
             result = subprocess.run(['powershell', '-Command', ps_cmd],
-                                  capture_output=True, text=True, timeout=30)
+                                    capture_output=True,
+                                    text=True,
+                                    timeout=30)
 
             if result.returncode == 0:
                 log_fn("✓ Carte(s) réseau configurée(s) en mode Privé")
                 log_fn("✅ Configuration réseau Privé terminée")
             else:
-                log_fn(f"⚠️ Résultat de la commande: {result.stderr.strip() if result.stderr else 'OK'}")
-                log_fn("✓ Commande exécutée (vérifier manuellement si nécessaire)")
+                log_fn(
+                    f"⚠️ Résultat de la commande: {result.stderr.strip() if result.stderr else 'OK'}"
+                )
+                log_fn(
+                    "✓ Commande exécutée (vérifier manuellement si nécessaire)"
+                )
 
         except Exception as e:
             log_fn(f"❌ Erreur configuration réseau Privé: {e}")
             log_fn("⚠️ Configuration manuelle requise:")
-            log_fn("   Paramètres → Réseau → Propriétés → Profil réseau → Privé")
+            log_fn(
+                "   Paramètres → Réseau → Propriétés → Profil réseau → Privé")
 
     def _set_best_performance(self, log_fn):
         """Option 5: Configurer les meilleures performances système"""
@@ -1878,18 +2092,20 @@ Get-NetAdapter | ForEach-Object {
             log_fn("▶ Configuration des meilleures performances système...")
 
             # Modifier la clé de registre pour les performances visuelles
-            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
-                                r"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects",
-                                0, winreg.KEY_SET_VALUE)
-            winreg.SetValueEx(key, "VisualFXSetting", 0, winreg.REG_DWORD, 2)  # 2 = Best Performance
+            key = winreg.OpenKey(
+                winreg.HKEY_CURRENT_USER,
+                r"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects",
+                0, winreg.KEY_SET_VALUE)
+            winreg.SetValueEx(key, "VisualFXSetting", 0, winreg.REG_DWORD,
+                              2)  # 2 = Best Performance
             winreg.CloseKey(key)
 
             log_fn("✓ Paramètres de performances visuelles modifiés")
 
             # Désactiver les animations
             key2 = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
-                                 r"Control Panel\Desktop\WindowMetrics",
-                                 0, winreg.KEY_SET_VALUE)
+                                  r"Control Panel\Desktop\WindowMetrics", 0,
+                                  winreg.KEY_SET_VALUE)
             winreg.SetValueEx(key2, "MinAnimate", 0, winreg.REG_SZ, "0")
             winreg.CloseKey(key2)
 
@@ -1911,79 +2127,114 @@ Get-NetAdapter | ForEach-Object {
             SBUTTON = "96996bc0-ad50-47ec-923b-6f41874dd9eb"
             LID = "5ca83367-6e45-459f-a27b-476b1d01c936"
 
-
             # Définir le mode de performance élevée
             cmd_power = 'powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c'  # GUID du mode Performance élevée
-            subprocess.run(cmd_power, capture_output=True, shell=True, timeout=10)
+            subprocess.run(cmd_power,
+                           capture_output=True,
+                           shell=True,
+                           timeout=10)
             log_fn("✓ Mode alimentation 'Performance élevée' activé")
 
             # Désactiver la mise en veille
-            subprocess.run('powercfg /change standby-timeout-ac 0', shell=True, timeout=10)
-            subprocess.run('powercfg /change standby-timeout-dc 0', shell=True, timeout=10)
+            subprocess.run('powercfg /change standby-timeout-ac 0',
+                           shell=True,
+                           timeout=10)
+            subprocess.run('powercfg /change standby-timeout-dc 0',
+                           shell=True,
+                           timeout=10)
             log_fn("✓ Mise en veille désactivée")
 
             # Jamais éteindre l'écran
-            subprocess.run('powercfg /change monitor-timeout-ac 0', shell=True, timeout=10)
-            subprocess.run('powercfg /change monitor-timeout-dc 0', shell=True, timeout=10)
+            subprocess.run('powercfg /change monitor-timeout-ac 0',
+                           shell=True,
+                           timeout=10)
+            subprocess.run('powercfg /change monitor-timeout-dc 0',
+                           shell=True,
+                           timeout=10)
             log_fn("✓ Extinction automatique de l'écran désactivée")
 
             # Arrêt du disque dur = 0
-            subprocess.run('powercfg /change disk-timeout-ac 0', shell=True, timeout=10)
-            subprocess.run('powercfg /change disk-timeout-dc 0', shell=True, timeout=10)
+            subprocess.run('powercfg /change disk-timeout-ac 0',
+                           shell=True,
+                           timeout=10)
+            subprocess.run('powercfg /change disk-timeout-dc 0',
+                           shell=True,
+                           timeout=10)
             log_fn("✓ Arrêt automatique du disque dur désactivé")
 
             log_fn("✅ Mode alimentation performance configuré")
-            
+
             # CONFIG boutons d'alimentation
-
-
-
 
             # Bouton Power -> Arrêter (2)
             subprocess.run(
                 'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\7516b95f-f776-4464-8c53-06167f40cc99\\7648efa3-dd9c-4e3e-b566-50f929386280" /v ACSettingIndex /t REG_DWORD /d 2 /f',
-                shell=True, check=True)
+                shell=True,
+                check=True)
             subprocess.run(
                 'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\7516b95f-f776-4464-8c53-06167f40cc99\\7648efa3-dd9c-4e3e-b566-50f929386280" /v DCSettingIndex /t REG_DWORD /d 2 /f',
-                shell=True, check=True)
+                shell=True,
+                check=True)
 
             # Bouton Veille -> Veille (1)
             subprocess.run(
                 'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\7516b95f-f776-4464-8c53-06167f40cc99\\96996bc0-ad50-47ec-923b-6f41874dd9eb" /v ACSettingIndex /t REG_DWORD /d 1 /f',
-                shell=True, check=True)
+                shell=True,
+                check=True)
             subprocess.run(
-                'reg add("HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\7516b95f-f776-4464-8c53-06167f40cc99\\96996bc0-ad50-47ec-923b-6f41874dd9eb" /v DCSettingIndex /t REG_DWORD /d 1 /f',
-                shell=True, check=True)
+                'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\7516b95f-f776-4464-8c53-06167f40cc99\\96996bc0-ad50-47ec-923b-6f41874dd9eb" /v DCSettingIndex /t REG_DWORD /d 1 /f',
+                shell=True,
+                check=True)
 
             # Fermeture capot -> Veille (1)
             subprocess.run(
                 'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\7516b95f-f776-4464-8c53-06167f40cc99\\5ca83367-6e45-459f-a27b-476b1d01c936" /v ACSettingIndex /t REG_DWORD /d 1 /f',
-                shell=True, check=True)
+                shell=True,
+                check=True)
             subprocess.run(
                 'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\7516b95f-f776-4464-8c53-06167f40cc99\\5ca83367-6e45-459f-a27b-476b1d01c936" /v DCSettingIndex /t REG_DWORD /d 1 /f',
-                shell=True, check=True)
+                shell=True,
+                check=True)
 
             # Recharger le plan courant
-            subprocess.run('powercfg /SETACTIVE SCHEME_CURRENT', shell=True, check=True)
-
-
-
-
+            subprocess.run('powercfg /SETACTIVE SCHEME_CURRENT',
+                           shell=True,
+                           check=True)
 
             # Bouton Power -> Arrêter
-            subprocess.run(f'powercfg /SETACVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {PBUTTON} 2', shell=True, check=True)
-            subprocess.run(f'powercfg /SETDCVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {PBUTTON} 2', shell=True, check=True)
+            subprocess.run(
+                f'powercfg /SETACVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {PBUTTON} 2',
+                shell=True,
+                check=True)
+            subprocess.run(
+                f'powercfg /SETDCVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {PBUTTON} 2',
+                shell=True,
+                check=True)
 
             # Bouton Veille -> Veille
-            subprocess.run(f'powercfg /SETACVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {SBUTTON} 1', shell=True, check=True)
-            subprocess.run(f'powercfg /SETDCVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {SBUTTON} 1', shell=True, check=True)
+            subprocess.run(
+                f'powercfg /SETACVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {SBUTTON} 1',
+                shell=True,
+                check=True)
+            subprocess.run(
+                f'powercfg /SETDCVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {SBUTTON} 1',
+                shell=True,
+                check=True)
 
             # Fermeture du capot -> Veille (si applicable)
-            subprocess.run(f'powercfg /SETACVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {LID} 1', shell=True, check=True)
-            subprocess.run(f'powercfg /SETDCVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {LID} 1', shell=True, check=True)
+            subprocess.run(
+                f'powercfg /SETACVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {LID} 1',
+                shell=True,
+                check=True)
+            subprocess.run(
+                f'powercfg /SETDCVALUEINDEX {GUID_PERF} {SUB_BUTTONS} {LID} 1',
+                shell=True,
+                check=True)
 
             # 6️⃣ Réactiver le profil pour appliquer
-            subprocess.run(f'powercfg /SETACTIVE {GUID_PERF}', shell=True, check=True)
+            subprocess.run(f'powercfg /SETACTIVE {GUID_PERF}',
+                           shell=True,
+                           check=True)
 
             # ------------------------------------------------------------
             # CONFIGURATION BOUTONS D'ALIMENTATION via PowerShell (fiable)
@@ -2016,64 +2267,393 @@ Get-NetAdapter | ForEach-Object {
             '''
 
             # Exécution PowerShell depuis Python
-            subprocess.run(["powershell", "-Command", powershell_script], shell=True, check=True)
-
+            subprocess.run(["powershell", "-Command", powershell_script],
+                           shell=True,
+                           check=True)
 
             log_fn("✅ Mode Performance complète configuré")
-        
-        
+
         except Exception as e:
             log_fn(f"❌ Erreur configuration alimentation: {e}")
 
-    def _install_ninite(self, log_fn):
-        """Option 9: Installer Ninite (Notepad++, 7zip, Foxit, TightVNC)"""
-        try:
-            log_fn("▶ Installation de Ninite en cours...")
+    def _run_install_cmd(self, cmd, log_fn, skip_flag, timeout_seconds=600):
+        """Lance une commande d'installation avec affichage en temps réel.
+        Retourne (returncode, full_output_lower, skipped)"""
+        import re
+        from queue import Queue, Empty
 
-            # Chemin vers ninite.exe
-            ninite_path = os.path.join(os.path.dirname(__file__), '..', 'assets', 'installers', 'ninite.exe')
-            ninite_path = os.path.abspath(ninite_path)
+        local_cwd = os.environ.get('TEMP', os.environ.get('TMP', 'C:\\Windows\\Temp'))
+        process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
+                                   stderr=subprocess.STDOUT, text=True, bufsize=1,
+                                   cwd=local_cwd)
 
-            if not os.path.exists(ninite_path):
-                log_fn("❌ Fichier ninite.exe non trouvé dans assets/installers/")
-                log_fn("   Veuillez placer ninite.exe dans le dossier assets/installers/")
-                return
+        output_lines = []
+        start_time = time.time()
+        last_update = time.time()
+        current_phase = "Installation en cours"
+        output_queue = Queue()
+        skipped = False
 
-            log_fn(f"✓ Fichier ninite.exe trouvé: {ninite_path}")
-            log_fn("  Lancement de l'installation...")
-            log_fn("  ⏳ Cela peut prendre plusieurs minutes (Notepad++, 7zip, Foxit, TightVNC, Teamviewer, Chrome)")
-            log_fn("  ⏳ Veuillez patienter, ne pas fermer la fenêtre...")
-
-            # Lancer ninite SANS paramètre (il est silencieux par défaut)
-            # NE PAS CAPTURER stdout/stderr pour éviter le blocage des pipes
+        def reader_thread():
             try:
-                # Utiliser CREATE_NO_WINDOW sur Windows pour exécution silencieuse
-                creation_flags = 0x08000000 if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0
+                for line in iter(process.stdout.readline, ''):
+                    if line:
+                        output_queue.put(line)
+                    if process.poll() is not None:
+                        break
+            except:
+                pass
 
-                result = subprocess.run([ninite_path],
-                                       timeout=600,
-                                       creationflags=creation_flags)
+        threading.Thread(target=reader_thread, daemon=True).start()
+        log_fn(f"     ⏳ Démarrage...")
 
+        while True:
+            if skip_flag and skip_flag.get('active'):
+                process.terminate()
+                try:
+                    process.kill()
+                except:
+                    pass
+                skip_flag['active'] = False
+                skipped = True
+                break
+
+            if process.poll() is not None:
+                while not output_queue.empty():
+                    try:
+                        output_lines.append(output_queue.get_nowait().strip())
+                    except Empty:
+                        break
+                break
+
+            elapsed = time.time() - start_time
+            if elapsed > timeout_seconds:
+                process.terminate()
+                try:
+                    process.kill()
+                except:
+                    pass
+                log_fn(f"     ⚠️ Timeout après {timeout_seconds // 60} minutes")
+                break
+
+            if time.time() - last_update >= 5:
+                elapsed_min = int(elapsed // 60)
+                elapsed_sec = int(elapsed % 60)
+                log_fn(f"     ⏳ {current_phase}... ({elapsed_min}:{elapsed_sec:02d})")
+                last_update = time.time()
+
+            try:
+                while True:
+                    line = output_queue.get_nowait().strip()
+                    output_lines.append(line)
+                    ll = line.lower()
+                    if 'found' in ll or 'trouvé' in ll:
+                        current_phase = "Package trouvé"
+                        log_fn(f"     ✓ {line[:70]}")
+                    elif 'download' in ll or 'télécharg' in ll:
+                        current_phase = "Téléchargement"
+                        pct = re.search(r'(\d+)\s*%', line)
+                        if pct:
+                            log_fn(f"     📥 Téléchargement: {pct.group(1)}%")
+                    elif 'install' in ll and 'success' not in ll and 'already' not in ll:
+                        current_phase = "Installation"
+                    elif 'successfully' in ll or 'succès' in ll:
+                        log_fn(f"     ✓ {line[:70]}")
+                    elif 'already installed' in ll or 'déjà installé' in ll:
+                        log_fn(f"     ✓ Déjà installé")
+            except Empty:
+                pass
+
+            time.sleep(0.2)
+
+        return process.poll(), '\n'.join(output_lines).lower(), skipped
+
+    def _get_choco_path(self):
+        """Retourne le chemin complet de choco.exe"""
+        import shutil
+        # Chemin standard Chocolatey
+        choco_paths = [
+            r"C:\ProgramData\chocolatey\bin\choco.exe",
+            r"C:\chocolatey\bin\choco.exe",
+        ]
+        for p in choco_paths:
+            if os.path.exists(p):
+                return p
+        # Fallback: chercher dans PATH
+        found = shutil.which("choco")
+        return found if found else None
+
+    def _ensure_chocolatey(self, log_fn):
+        """Vérifie si Chocolatey est installé, sinon l'installe. Retourne chemin choco ou None."""
+        local_cwd = os.environ.get('TEMP', os.environ.get('TMP', 'C:\\Windows\\Temp'))
+
+        # Vérifier si choco existe déjà
+        choco = self._get_choco_path()
+        if choco:
+            try:
+                result = subprocess.run([choco, '--version'], capture_output=True,
+                                        text=True, timeout=10, cwd=local_cwd)
                 if result.returncode == 0:
-                    log_fn("✓ Installation de Ninite terminée avec succès")
-                else:
-                    log_fn(f"✓ Installation terminée (code retour: {result.returncode})")
+                    log_fn(f"     ✓ Chocolatey disponible ({result.stdout.strip()})")
+                    return choco
+            except:
+                pass
 
-                # Attendre et configurer le mot de passe VNC TightVNC
+        log_fn("     📥 Chocolatey non trouvé - Installation en cours...")
+        try:
+            install_cmd = (
+                'powershell -NoProfile -ExecutionPolicy Bypass -Command '
+                '"Set-ExecutionPolicy Bypass -Scope Process -Force; '
+                '[System.Net.ServicePointManager]::SecurityProtocol = 3072; '
+                'iex ((New-Object System.Net.WebClient).DownloadString('
+                "\'https://community.chocolatey.org/install.ps1\'))\""
+            )
+            result = subprocess.run(install_cmd, shell=True, capture_output=True,
+                                    text=True, timeout=180, cwd=local_cwd)
+            # Après installation, chercher choco par chemin direct
+            choco = self._get_choco_path()
+            if choco and os.path.exists(choco):
+                log_fn("     ✅ Chocolatey installé avec succès")
+                return choco
+            else:
+                log_fn("     ❌ Échec installation Chocolatey")
+                if result.stderr:
+                    log_fn(f"     {result.stderr[:100]}")
+                return None
+        except Exception as e:
+            log_fn(f"     ❌ Erreur installation Chocolatey: {e}")
+            return None
+
+    def _build_ps1_script(self, winget_id, temp_dir):
+        """Génère un fichier .ps1 de téléchargement direct pour l'app donnée.
+        Retourne le chemin du fichier .ps1 ou None si app inconnue."""
+
+        DOWNLOAD_INFO = {
+            '7zip.7zip': {
+                'url': 'https://www.7-zip.org/a/7z2407-x64.exe',
+                'out': 'outils_7zip.exe',
+                'install': 'Start-Process "$out" -ArgumentList "/S" -Wait -ErrorAction Stop',
+            },
+            'Google.Chrome': {
+                'url': 'https://dl.google.com/chrome/install/GoogleChromeStandaloneEnterprise64.msi',
+                'out': 'outils_chrome.msi',
+                'install': 'Start-Process msiexec.exe -ArgumentList "/i", "$out", "/quiet", "/norestart" -Wait -ErrorAction Stop',
+            },
+            'AnyDeskSoftwareGmbH.AnyDesk': {
+                'url': 'https://download.anydesk.com/AnyDesk.exe',
+                'out': 'outils_anydesk.exe',
+                'install': 'Start-Process "$out" -ArgumentList "--install --silent --create-shortcuts --create-desktop-icon" -Wait -ErrorAction Stop',
+            },
+            'TeamViewer.TeamViewer': {
+                'url': 'https://download.teamviewer.com/download/TeamViewer_Setup_x64.exe',
+                'out': 'outils_teamviewer.exe',
+                'install': 'Start-Process "$out" -ArgumentList "/S" -Wait -ErrorAction Stop',
+            },
+            'GlavSoft.TightVNC': {
+                'url': 'https://www.tightvnc.com/download/2.8.85/tightvnc-2.8.85-gpl-setup-64bit.msi',
+                'out': 'outils_tightvnc.msi',
+                'install': 'Start-Process msiexec.exe -ArgumentList "/i", "$out", "/quiet", "/norestart", "ADDLOCAL=Server,Viewer" -Wait -ErrorAction Stop',
+            },
+            'Foxit.FoxitReader': {
+                'url': 'https://cdn01.foxitsoftware.com/pub/foxit/reader/desktop/win/2024.4/2024.4.0.29667/FoxitPDFReader20244_Setup_Prom_IS.exe',
+                'out': 'outils_foxit.exe',
+                'install': 'Start-Process "$out" -ArgumentList "/silent /install" -Wait -ErrorAction Stop',
+            },
+            'Notepad++.Notepad++': {
+                'url': 'https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.7.1/npp.8.7.1.Installer.x64.exe',
+                'out': 'outils_npp.exe',
+                'install': 'Start-Process "$out" -ArgumentList "/S" -Wait -ErrorAction Stop',
+            },
+        }
+
+        if winget_id not in DOWNLOAD_INFO:
+            return None
+
+        info = DOWNLOAD_INFO[winget_id]
+        url  = info['url']
+        out_name = info['out']
+        install_cmd = info['install']
+
+        ps_content = f"""
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$ErrorActionPreference = 'Stop'
+
+$url = "{url}"
+$out = Join-Path "{temp_dir}" "{out_name}"
+
+Write-Host "Telechargement: $url"
+try {{
+    Invoke-WebRequest -Uri $url -OutFile $out -UseBasicParsing
+    Write-Host "Telechargement OK - taille: $((Get-Item $out).Length) octets"
+}} catch {{
+    Write-Host "ERREUR telechargement: $_"
+    exit 1
+}}
+
+Write-Host "Installation en cours..."
+try {{
+    {install_cmd}
+    Write-Host "Installation OK"
+}} catch {{
+    Write-Host "ERREUR installation: $_"
+    exit 1
+}}
+
+if (Test-Path $out) {{ Remove-Item $out -Force -ErrorAction SilentlyContinue }}
+Write-Host "Termine"
+exit 0
+"""
+        ps_path = os.path.join(temp_dir, f'outils_install_{winget_id.replace(".", "_")}.ps1')
+        with open(ps_path, 'w', encoding='utf-8') as f:
+            f.write(ps_content)
+        return ps_path
+
+    def _install_winget_apps(self, log_fn, apps_list, skip_flag=None):
+        """Option 9: Installer des logiciels via winget → Chocolatey → Téléchargement direct"""
+
+        DIRECT_DOWNLOAD_IDS = {
+            '7zip.7zip', 'Google.Chrome', 'AnyDeskSoftwareGmbH.AnyDesk',
+            'TeamViewer.TeamViewer', 'GlavSoft.TightVNC',
+            'Foxit.FoxitReader', 'Notepad++.Notepad++',
+        }
+
+        try:
+            total_apps = len(apps_list)
+            log_fn("▶ Installation des logiciels (winget → Choco → Téléchargement direct)...")
+            log_fn(f"  {total_apps} logiciel(s) à installer")
+            log_fn("─" * 40)
+
+            success_count = 0
+            fail_count = 0
+            skipped_count = 0
+            choco_available = None
+
+            # Dossier local pour éviter les problèmes de chemin réseau UNC
+            local_cwd = os.environ.get('TEMP', os.environ.get('TMP', 'C:\\Windows\\Temp'))
+
+            # Vérifier winget une seule fois au départ
+            try:
+                wg = subprocess.run('winget --version', shell=True,
+                                    capture_output=True, text=True, timeout=8,
+                                    cwd=local_cwd)
+                winget_ok = wg.returncode == 0
+                if winget_ok:
+                    log_fn(f"  ✓ winget disponible ({wg.stdout.strip()})")
+                else:
+                    log_fn("  ⚠️ winget non disponible → utilisera Choco/Téléchargement")
+            except:
+                winget_ok = False
+                log_fn("  ⚠️ winget non disponible → utilisera Choco/Téléchargement")
+
+            for idx, app_tuple in enumerate(apps_list, 1):
+                app_name = app_tuple[0]
+                winget_id = app_tuple[1]
+                choco_id  = app_tuple[2] if len(app_tuple) > 2 else None
+
+                if skip_flag and skip_flag.get('active'):
+                    log_fn(f"  ⏭️ [{idx}/{total_apps}] {app_name} - IGNORÉ (skip)")
+                    skipped_count += 1
+                    skip_flag['active'] = False
+                    continue
+
+                log_fn(f"")
+                log_fn(f"  [{idx}/{total_apps}] 📦 {app_name}")
+                installed = False
+
+                # ── 1. winget ──────────────────────────────────────────────
+                if winget_ok:
+                    log_fn(f"  ├─ 🔵 winget install --id={winget_id}")
+                    try:
+                        cmd = (f'winget install --id={winget_id} -e --silent '
+                               f'--accept-package-agreements --accept-source-agreements')
+                        rc, out, skipped = self._run_install_cmd(cmd, log_fn, skip_flag)
+                        if skipped:
+                            log_fn(f"  ⏭️ Skip")
+                            skipped_count += 1
+                            continue
+                        if rc == 0 or 'already installed' in out or 'déjà installé' in out:
+                            log_fn(f"  ✅ {app_name} installé via winget")
+                            success_count += 1
+                            installed = True
+                        else:
+                            log_fn(f"  ├─ ⚠️ winget échoué (code {rc})")
+                    except Exception as e:
+                        log_fn(f"  ├─ ⚠️ winget: {e}")
+
+                # ── 2. Chocolatey ──────────────────────────────────────────
+                if not installed and choco_id:
+                    log_fn(f"  ├─ 🟠 choco install {choco_id}")
+                    if choco_available is None:
+                        choco_available = self._ensure_chocolatey(log_fn)
+                    if choco_available:
+                        try:
+                            cmd = f'"{choco_available}" install {choco_id} -y --no-progress --ignore-checksums'
+                            rc, out, skipped = self._run_install_cmd(cmd, log_fn, skip_flag)
+                            if skipped:
+                                log_fn(f"  ⏭️ Skip")
+                                skipped_count += 1
+                                continue
+                            if rc == 0 or 'already installed' in out:
+                                log_fn(f"  ✅ {app_name} installé via Chocolatey")
+                                success_count += 1
+                                installed = True
+                            else:
+                                log_fn(f"  ├─ ⚠️ Chocolatey échoué (code {rc})")
+                        except Exception as e:
+                            log_fn(f"  ├─ ⚠️ Chocolatey: {e}")
+                    else:
+                        log_fn(f"  ├─ ⚠️ Chocolatey indisponible")
+
+                # ── 3. Téléchargement direct via fichier .ps1 ─────────────
+                if not installed and winget_id in DIRECT_DOWNLOAD_IDS:
+                    log_fn(f"  └─ 🟢 Téléchargement direct en cours...")
+                    try:
+                        ps_path = self._build_ps1_script(winget_id, local_cwd)
+                        if not ps_path:
+                            raise Exception("Script PS1 non généré")
+                        log_fn(f"     Script: {ps_path}")
+                        ps_cmd = f'powershell -NoProfile -ExecutionPolicy Bypass -File "{ps_path}"'
+                        rc, out, skipped = self._run_install_cmd(ps_cmd, log_fn, skip_flag, timeout_seconds=300)
+                        # Nettoyage du script
+                        try:
+                            if os.path.exists(ps_path):
+                                os.remove(ps_path)
+                        except:
+                            pass
+                        if skipped:
+                            log_fn(f"  ⏭️ Skip")
+                            skipped_count += 1
+                            continue
+                        if rc == 0:
+                            log_fn(f"  ✅ {app_name} installé via téléchargement direct")
+                            success_count += 1
+                            installed = True
+                        else:
+                            log_fn(f"  ❌ {app_name} - toutes les méthodes ont échoué (code {rc})")
+                            fail_count += 1
+                    except Exception as e:
+                        log_fn(f"  ❌ {app_name} - téléchargement direct: {e}")
+                        fail_count += 1
+                elif not installed:
+                    log_fn(f"  ❌ {app_name} - installation impossible")
+                    fail_count += 1
+
+            log_fn("")
+            log_fn("─" * 40)
+            log_fn(f"✅ Installation terminée: {success_count}/{total_apps} réussi(s)")
+            if fail_count > 0:
+                log_fn(f"⚠️ {fail_count} échec(s)")
+            if skipped_count > 0:
+                log_fn(f"⏭️ {skipped_count} ignoré(s)")
+
+            # Si TightVNC a été installé, configurer le mot de passe
+            if any(len(t) > 1 and t[1] == 'GlavSoft.TightVNC' for t in apps_list):
                 log_fn("")
-                log_fn("  Configuration du mot de passe VNC en cours...")
+                log_fn("▶ Configuration du mot de passe VNC TightVNC...")
                 self._configure_vnc_password(log_fn)
 
-            except subprocess.TimeoutExpired:
-                log_fn("⚠️ Installation prend plus de 10 minutes")
-                log_fn("   L'installation continue probablement en arrière-plan")
-                log_fn("   Configurez le mot de passe VNC manuellement plus tard")
-
-            log_fn("✅ Processus Ninite terminé")
-
         except Exception as e:
-            log_fn(f"❌ Erreur installation Ninite: {e}")
-            log_fn("   Vérifiez que le fichier ninite.exe est correct")
+            log_fn(f"❌ Erreur installation: {e}")
 
     def _configure_vnc_password(self, log_fn):
         """Configurer le mot de passe VNC TightVNC à Log1tech"""
@@ -2104,9 +2684,13 @@ Get-NetAdapter | ForEach-Object {
                     break
 
                 if attempt == 0:
-                    log_fn(f"  Attente installation TightVNC... ({wait_interval * (attempt + 1)}s)")
+                    log_fn(
+                        f"  Attente installation TightVNC... ({wait_interval * (attempt + 1)}s)"
+                    )
                 elif attempt < (max_wait // wait_interval) - 1:
-                    log_fn(f"  Toujours en attente... ({wait_interval * (attempt + 1)}s)")
+                    log_fn(
+                        f"  Toujours en attente... ({wait_interval * (attempt + 1)}s)"
+                    )
 
                 time.sleep(wait_interval)
 
@@ -2123,69 +2707,102 @@ Get-NetAdapter | ForEach-Object {
                     log_fn("  Configuration du service TightVNC...")
 
                     # Configurer le service pour démarrage automatique
-                    subprocess.run('sc config tvnserver start= auto', 
-                                  capture_output=True, shell=True, timeout=10)
-                    log_fn("✓ Service TightVNC configuré pour démarrage automatique")
+                    subprocess.run('sc config tvnserver start= auto',
+                                   capture_output=True,
+                                   shell=True,
+                                   timeout=10)
+                    log_fn(
+                        "✓ Service TightVNC configuré pour démarrage automatique"
+                    )
 
                     # Arrêter le service VNC s'il tourne
-                    subprocess.run('net stop tvnserver', capture_output=True, shell=True, timeout=10)
+                    subprocess.run('net stop tvnserver',
+                                   capture_output=True,
+                                   shell=True,
+                                   timeout=10)
                     time.sleep(1)
 
                     # Configurer via le registre avec les valeurs chiffrées
                     try:
                         # Ouvrir ou créer la clé TightVNC Server
-                        key = winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, 
-                                              r"SOFTWARE\TightVNC\Server")
+                        key = winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE,
+                                               r"SOFTWARE\TightVNC\Server")
 
                         # Configurer les paramètres de base
-                        winreg.SetValueEx(key, "AcceptRfbConnections", 0, winreg.REG_DWORD, 1)
-                        winreg.SetValueEx(key, "LoopbackOnly", 0, winreg.REG_DWORD, 0)
-                        winreg.SetValueEx(key, "AllowLoopback", 0, winreg.REG_DWORD, 1)
-                        winreg.SetValueEx(key, "UseAuthentication", 0, winreg.REG_DWORD, 1)
+                        winreg.SetValueEx(key, "AcceptRfbConnections", 0,
+                                          winreg.REG_DWORD, 1)
+                        winreg.SetValueEx(key, "LoopbackOnly", 0,
+                                          winreg.REG_DWORD, 0)
+                        winreg.SetValueEx(key, "AllowLoopback", 0,
+                                          winreg.REG_DWORD, 1)
+                        winreg.SetValueEx(key, "UseAuthentication", 0,
+                                          winreg.REG_DWORD, 1)
 
                         # Mot de passe "Log1tech" chiffré en DES VNC (8 bytes)
                         # Valeurs hexadécimales du fichier .reg fourni par l'utilisateur
-                        password_encrypted = bytes([0x5d, 0xd9, 0xd3, 0x3a, 0x0c, 0xed, 0x17, 0xdb])
-                        control_password_encrypted = bytes([0x5d, 0xd9, 0xd3, 0x3a, 0x0c, 0xed, 0x17, 0xdb])
+                        password_encrypted = bytes(
+                            [0x5d, 0xd9, 0xd3, 0x3a, 0x0c, 0xed, 0x17, 0xdb])
+                        control_password_encrypted = bytes(
+                            [0x5d, 0xd9, 0xd3, 0x3a, 0x0c, 0xed, 0x17, 0xdb])
 
                         # Écrire les mots de passe chiffrés dans le registre
-                        winreg.SetValueEx(key, "Password", 0, winreg.REG_BINARY, password_encrypted)
-                        winreg.SetValueEx(key, "ControlPassword", 0, winreg.REG_BINARY, control_password_encrypted)
+                        winreg.SetValueEx(key, "Password", 0,
+                                          winreg.REG_BINARY,
+                                          password_encrypted)
+                        winreg.SetValueEx(key, "ControlPassword", 0,
+                                          winreg.REG_BINARY,
+                                          control_password_encrypted)
 
                         winreg.CloseKey(key)
                         log_fn("✓ Configuration registre TightVNC mise à jour")
-                        log_fn("✓ Mots de passe chiffrés écrits dans le registre")
+                        log_fn(
+                            "✓ Mots de passe chiffrés écrits dans le registre")
 
                     except Exception as reg_error:
-                        log_fn(f"⚠️ Erreur configuration registre: {reg_error}")
+                        log_fn(
+                            f"⚠️ Erreur configuration registre: {reg_error}")
 
                     # Redémarrer le service
-                    result = subprocess.run('net start tvnserver', 
-                                          capture_output=True, shell=True, timeout=10)
+                    result = subprocess.run('net start tvnserver',
+                                            capture_output=True,
+                                            shell=True,
+                                            timeout=10)
 
                     if result.returncode == 0:
                         log_fn("✓ Service TightVNC démarré")
                     else:
-                        log_fn("⚠️ Démarrage du service (vérifier manuellement)")
+                        log_fn(
+                            "⚠️ Démarrage du service (vérifier manuellement)")
 
                     log_fn("✅ Configuration VNC terminée")
                     log_fn("  ✓ Démarrage automatique: Activé")
                     log_fn("  ✓ Mot de passe: Log1tech (Primary Password)")
                     log_fn("")
-                    log_fn("⚠️ Si le mot de passe ne fonctionne pas, configurez manuellement:")
-                    log_fn("   1. Clic droit sur l'icône TightVNC (barre des tâches)")
+                    log_fn(
+                        "⚠️ Si le mot de passe ne fonctionne pas, configurez manuellement:"
+                    )
+                    log_fn(
+                        "   1. Clic droit sur l'icône TightVNC (barre des tâches)"
+                    )
                     log_fn("   2. Administration → Paramètres du serveur")
-                    log_fn("   3. Onglet 'Authentification' → Primary Password")
+                    log_fn(
+                        "   3. Onglet 'Authentification' → Primary Password")
                     log_fn("   4. Entrer: Log1tech")
 
                 except Exception as e:
                     log_fn(f"⚠️ Configuration automatique échouée: {e}")
-                    log_fn("   Configurez manuellement le service et mot de passe VNC")
+                    log_fn(
+                        "   Configurez manuellement le service et mot de passe VNC"
+                    )
 
             else:
                 log_fn("⚠️ TightVNC Server non trouvé après 60 secondes")
-                log_fn("   L'installation a peut-être échoué ou n'est pas terminée")
-                log_fn("   Mot de passe recommandé: Log1tech (à configurer manuellement)")
+                log_fn(
+                    "   L'installation a peut-être échoué ou n'est pas terminée"
+                )
+                log_fn(
+                    "   Mot de passe recommandé: Log1tech (à configurer manuellement)"
+                )
 
         except Exception as e:
             log_fn(f"⚠️ Configuration VNC manuelle requise: {e}")
@@ -2196,7 +2813,9 @@ Get-NetAdapter | ForEach-Object {
         try:
             import winreg
 
-            log_fn(f"▶ Configuration des heures actives ({start_hour}h - {end_hour}h)...")
+            log_fn(
+                f"▶ Configuration des heures actives ({start_hour}h - {end_hour}h)..."
+            )
 
             # Valider les heures
             try:
@@ -2212,19 +2831,25 @@ Get-NetAdapter | ForEach-Object {
                 return
 
             # Modifier la clé de registre pour les heures actives
-            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                                r"SOFTWARE\Microsoft\WindowsUpdate\UX\Settings",
-                                0, winreg.KEY_SET_VALUE)
-            winreg.SetValueEx(key, "ActiveHoursStart", 0, winreg.REG_DWORD, start)
+            key = winreg.OpenKey(
+                winreg.HKEY_LOCAL_MACHINE,
+                r"SOFTWARE\Microsoft\WindowsUpdate\UX\Settings", 0,
+                winreg.KEY_SET_VALUE)
+            winreg.SetValueEx(key, "ActiveHoursStart", 0, winreg.REG_DWORD,
+                              start)
             winreg.SetValueEx(key, "ActiveHoursEnd", 0, winreg.REG_DWORD, end)
             winreg.CloseKey(key)
 
             if start >= end:
-                log_fn(f"✓ Heures actives définies: {start}h - {end}h (passant minuit)")
+                log_fn(
+                    f"✓ Heures actives définies: {start}h - {end}h (passant minuit)"
+                )
             else:
                 log_fn(f"✓ Heures actives définies: {start}h - {end}h")
             log_fn("✅ Heures actives configurées")
-            log_fn("   Windows ne redémarrera pas automatiquement pendant ces heures")
+            log_fn(
+                "   Windows ne redémarrera pas automatiquement pendant ces heures"
+            )
 
         except Exception as e:
             log_fn(f"❌ Erreur configuration heures actives: {e}")
@@ -2252,9 +2877,6 @@ Get-NetAdapter | ForEach-Object {
         except:
             window.attributes('-zoomed', True)  # Linux
 
-
-
-
         # Frame principal
         main_frame = ctk.CTkFrame(window)
         main_frame.pack(fill="both", expand=True, padx=10, pady=10)
@@ -2274,8 +2896,9 @@ Get-NetAdapter | ForEach-Object {
         standard_vars = {
             'taskbar': tk.BooleanVar(value=True),
             'notifications': tk.BooleanVar(value=True),
-            'user_admin': tk.BooleanVar(value=True),
-            'user_kpitech': tk.BooleanVar(value=True),
+            'user_admin': tk.BooleanVar(value=False),
+            'user_kpitech': tk.BooleanVar(value=False),
+            'auto_logon_admin': tk.BooleanVar(value=False),
             'wallpaper': tk.BooleanVar(value=True),
         }
         serveur_vars = {
@@ -2296,79 +2919,142 @@ Get-NetAdapter | ForEach-Object {
                      font=ctk.CTkFont(size=12,
                                       weight="bold")).pack(pady=(6, 4))
 
-        ctk.CTkCheckBox(col1,
+        # === Container 2 colonnes: Options | Logiciels ===
+        top_row = ctk.CTkFrame(col1, fg_color="transparent")
+        top_row.pack(fill="x", padx=4, pady=0)
+        top_row.grid_columnconfigure(0, weight=1)
+        top_row.grid_columnconfigure(1, weight=1)
+
+        # --- Sous-colonne gauche: Options ---
+        options_col = ctk.CTkFrame(top_row, fg_color="transparent")
+        options_col.grid(row=0, column=0, sticky="nw")
+
+        ctk.CTkCheckBox(options_col,
                         text="✓ Tweak barre tâches",
                         variable=standard_vars['taskbar']).pack(anchor="w",
-                                                                padx=8,
+                                                                padx=4,
                                                                 pady=1)
-        ctk.CTkCheckBox(col1,
+        ctk.CTkCheckBox(options_col,
                         text="✓ Désactiver notif.",
                         variable=standard_vars['notifications']).pack(
-                            anchor="w", padx=8, pady=1)
-        ctk.CTkCheckBox(col1,
+                            anchor="w", padx=4, pady=1)
+        ctk.CTkCheckBox(options_col,
                         text="✓ User 'admin'",
                         variable=standard_vars['user_admin']).pack(anchor="w",
-                                                                   padx=8,
+                                                                   padx=4,
                                                                    pady=1)
-        ctk.CTkCheckBox(col1,
+        ctk.CTkCheckBox(options_col,
                         text="✓ User 'kpitech'",
                         variable=standard_vars['user_kpitech']).pack(
-                            anchor="w", padx=8, pady=1)
-        ctk.CTkCheckBox(col1,
+                            anchor="w", padx=4, pady=1)
+        ctk.CTkCheckBox(options_col,
+                        text="✓ Auto logon admin",
+                        variable=standard_vars['auto_logon_admin']).pack(
+                            anchor="w", padx=4, pady=1)
+        ctk.CTkCheckBox(options_col,
                         text="✓ Wallpaper KPI",
                         variable=standard_vars['wallpaper']).pack(anchor="w",
-                                                                  padx=8,
+                                                                  padx=4,
                                                                   pady=1)
 
-        # === NOUVELLES OPTIONS ===
-
-        # Option 1: Désactiver UAC (cochée par défaut)
         standard_vars['disable_uac'] = tk.BooleanVar(value=True)
-        ctk.CTkCheckBox(col1,
+        ctk.CTkCheckBox(options_col,
                         text="✓ Désactiver UAC",
                         variable=standard_vars['disable_uac']).pack(anchor="w",
-                                                                   padx=8,
-                                                                   pady=1)
+                                                                    padx=4,
+                                                                    pady=1)
 
-        # Option 3: Désactiver mise en veille des cartes réseau (cochée par défaut)
         standard_vars['disable_network_sleep'] = tk.BooleanVar(value=True)
-        ctk.CTkCheckBox(col1,
-                        text="✓ Désactiver veille cartes réseau",
-                        variable=standard_vars['disable_network_sleep']).pack(anchor="w",
-                                                                              padx=8,
-                                                                              pady=1)
+        ctk.CTkCheckBox(options_col,
+                        text="✓ Désact. veille réseau",
+                        variable=standard_vars['disable_network_sleep']).pack(
+                            anchor="w", padx=4, pady=1)
 
-        # Option 3b: Mettre carte réseau en mode Privé (cochée par défaut)
         standard_vars['network_private'] = tk.BooleanVar(value=True)
-        ctk.CTkCheckBox(col1,
-                        text="✓ Mettre carte réseau en mode Privé",
-                        variable=standard_vars['network_private']).pack(anchor="w",
-                                                                        padx=8,
-                                                                        pady=1)
+        ctk.CTkCheckBox(options_col,
+                        text="✓ Réseau mode Privé",
+                        variable=standard_vars['network_private']).pack(
+                            anchor="w", padx=4, pady=1)
 
-        # Option 4: Fuseau horaire + synchronisation (cochée par défaut)
         standard_vars['timezone_sync'] = tk.BooleanVar(value=True)
-        ctk.CTkCheckBox(col1,
+        ctk.CTkCheckBox(options_col,
                         text="✓ Fuseau horaire + sync",
-                        variable=standard_vars['timezone_sync']).pack(anchor="w",
-                                                                      padx=8,
-                                                                      pady=1)
+                        variable=standard_vars['timezone_sync']).pack(
+                            anchor="w", padx=4, pady=1)
 
-        # Option 5: Performances système (cochée par défaut)
         standard_vars['best_performance'] = tk.BooleanVar(value=True)
-        ctk.CTkCheckBox(col1,
-                        text="✓ Meilleures performances",
-                        variable=standard_vars['best_performance']).pack(anchor="w",
-                                                                         padx=8,
-                                                                         pady=1)
+        ctk.CTkCheckBox(options_col,
+                        text="✓ Meilleures perfs",
+                        variable=standard_vars['best_performance']).pack(
+                            anchor="w", padx=4, pady=1)
 
-        # Option 6: Options d'alimentation (cochée par défaut)
         standard_vars['power_options'] = tk.BooleanVar(value=True)
-        ctk.CTkCheckBox(col1,
-                        text="✓ Mode alimentation performance",
-                        variable=standard_vars['power_options']).pack(anchor="w",
-                                                                      padx=8,
-                                                                      pady=1)
+        ctk.CTkCheckBox(options_col,
+                        text="✓ Alimentation perf.",
+                        variable=standard_vars['power_options']).pack(
+                            anchor="w", padx=4, pady=1)
+
+        # --- Sous-colonne droite: Logiciels ---
+        software_col = ctk.CTkFrame(top_row, fg_color="#1f2937")
+        software_col.grid(row=0, column=1, sticky="new", padx=(4, 0))
+
+        ctk.CTkLabel(software_col,
+                     text="📦 Logiciels (beta fonctionne pas toujours)",
+                     font=ctk.CTkFont(size=10,
+                                      weight="bold")).pack(anchor="w",
+                                                           padx=6,
+                                                           pady=(4, 2))
+
+        standard_vars['install_7zip'] = tk.BooleanVar(value=False)
+        standard_vars['install_chrome'] = tk.BooleanVar(value=False)
+        standard_vars['install_anydesk'] = tk.BooleanVar(value=False)
+        standard_vars['install_teamviewer'] = tk.BooleanVar(value=False)
+        standard_vars['install_tightvnc'] = tk.BooleanVar(value=False)
+        standard_vars['install_foxit'] = tk.BooleanVar(value=False)
+        standard_vars['install_notepadpp'] = tk.BooleanVar(value=False)
+
+        ctk.CTkCheckBox(software_col,
+                        text="7-Zip",
+                        variable=standard_vars['install_7zip'],
+                        font=ctk.CTkFont(size=11)).pack(anchor="w",
+                                                        padx=6,
+                                                        pady=0)
+        ctk.CTkCheckBox(software_col,
+                        text="Chrome",
+                        variable=standard_vars['install_chrome'],
+                        font=ctk.CTkFont(size=11)).pack(anchor="w",
+                                                        padx=6,
+                                                        pady=0)
+        ctk.CTkCheckBox(software_col,
+                        text="AnyDesk",
+                        variable=standard_vars['install_anydesk'],
+                        font=ctk.CTkFont(size=11)).pack(anchor="w",
+                                                        padx=6,
+                                                        pady=0)
+        ctk.CTkCheckBox(software_col,
+                        text="TeamViewer",
+                        variable=standard_vars['install_teamviewer'],
+                        font=ctk.CTkFont(size=11)).pack(anchor="w",
+                                                        padx=6,
+                                                        pady=0)
+        ctk.CTkCheckBox(software_col,
+                        text="TightVNC",
+                        variable=standard_vars['install_tightvnc'],
+                        font=ctk.CTkFont(size=11)).pack(anchor="w",
+                                                        padx=6,
+                                                        pady=0)
+        ctk.CTkCheckBox(software_col,
+                        text="Foxit Reader",
+                        variable=standard_vars['install_foxit'],
+                        font=ctk.CTkFont(size=11)).pack(anchor="w",
+                                                        padx=6,
+                                                        pady=0)
+        ctk.CTkCheckBox(software_col,
+                        text="Notepad++",
+                        variable=standard_vars['install_notepadpp'],
+                        font=ctk.CTkFont(size=11)).pack(anchor="w",
+                                                        padx=6,
+                                                        pady=(0, 4))
 
         # === OPTION 8: HEURES ACTIVES DU SYSTÈME ===
         standard_vars['active_hours'] = tk.BooleanVar(value=True)
@@ -2380,34 +3066,38 @@ Get-NetAdapter | ForEach-Object {
 
         ctk.CTkCheckBox(active_hours_frame,
                         text="✓ Modifier heures actives",
-                        variable=standard_vars['active_hours']).pack(anchor="w", pady=1)
+                        variable=standard_vars['active_hours']).pack(
+                            anchor="w", pady=1)
 
         # Champ conditionnel pour les heures
-        hours_input_frame = ctk.CTkFrame(active_hours_frame, fg_color="transparent")
+        hours_input_frame = ctk.CTkFrame(active_hours_frame,
+                                         fg_color="transparent")
         hours_input_frame.pack(anchor="w", padx=20, pady=(2, 0))
 
-        ctk.CTkLabel(hours_input_frame, 
-                     text="De :", 
+        ctk.CTkLabel(hours_input_frame, text="De :",
                      font=ctk.CTkFont(size=10)).pack(side="left", padx=(0, 2))
 
-        start_entry = ctk.CTkEntry(hours_input_frame,
-                                   textvariable=standard_vars['active_hours_start'],
-                                   width=40, height=22,
-                                   font=ctk.CTkFont(size=10))
+        start_entry = ctk.CTkEntry(
+            hours_input_frame,
+            textvariable=standard_vars['active_hours_start'],
+            width=40,
+            height=22,
+            font=ctk.CTkFont(size=10))
         start_entry.pack(side="left", padx=2)
 
-        ctk.CTkLabel(hours_input_frame, 
-                     text="h à :", 
+        ctk.CTkLabel(hours_input_frame,
+                     text="h à :",
                      font=ctk.CTkFont(size=10)).pack(side="left", padx=(4, 2))
 
-        end_entry = ctk.CTkEntry(hours_input_frame,
-                                 textvariable=standard_vars['active_hours_end'],
-                                 width=40, height=22,
-                                 font=ctk.CTkFont(size=10))
+        end_entry = ctk.CTkEntry(
+            hours_input_frame,
+            textvariable=standard_vars['active_hours_end'],
+            width=40,
+            height=22,
+            font=ctk.CTkFont(size=10))
         end_entry.pack(side="left", padx=2)
 
-        ctk.CTkLabel(hours_input_frame, 
-                     text="h", 
+        ctk.CTkLabel(hours_input_frame, text="h",
                      font=ctk.CTkFont(size=10)).pack(side="left", padx=(0, 4))
 
         # Fonction pour activer/désactiver le champ conditionnel
@@ -2428,23 +3118,15 @@ Get-NetAdapter | ForEach-Object {
             end_entry.configure(state="disabled")
 
         # Lier le changement de la checkbox
-        standard_vars['active_hours'].trace_add('write', lambda *args: toggle_hours_input())
-
-        # === OPTION 9: INSTALLATION NINITE (Notepad++, 7zip, Foxit, TightVNC) ===
-        standard_vars['install_ninite'] = tk.BooleanVar(value=True)
-        ctk.CTkCheckBox(col1,
-                        text="✓ Installer Ninite (Notepad++, 7zip, Foxit, TightVNC, TeamViewer, Chrome)",
-                        variable=standard_vars['install_ninite']).pack(anchor="w",
-                                                                       padx=8,
-                                                                       pady=(6, 1))
+        standard_vars['active_hours'].trace_add(
+            'write', lambda *args: toggle_hours_input())
 
         # === OPTION 10: RÉTABLIR MENU CONTEXTUEL CLASSIQUE (Windows 11) ===
         standard_vars['restore_context_menu'] = tk.BooleanVar(value=True)
         ctk.CTkCheckBox(col1,
                         text="✓ Rétablir menu contextuel classique (Win11)",
-                        variable=standard_vars['restore_context_menu']).pack(anchor="w",
-                                                                             padx=8,
-                                                                             pady=(1, 4))
+                        variable=standard_vars['restore_context_menu']).pack(
+                            anchor="w", padx=8, pady=(1, 4))
 
         # Statut partage protégé par mot de passe
         password_sharing_enabled = self._check_password_protected_sharing()
@@ -2471,15 +3153,16 @@ Get-NetAdapter | ForEach-Object {
                      text_color=pw_color).pack(anchor="w", padx=8, pady=(1, 1))
 
         # --- Choix d’action ---
-        standard_vars['enable_password_sharing_config'] = tk.BooleanVar(value=True)
-        standard_vars['password_sharing_action'] = tk.StringVar(value="Désactiver protection")
+        standard_vars['enable_password_sharing_config'] = tk.BooleanVar(
+            value=True)
+        standard_vars['password_sharing_action'] = tk.StringVar(
+            value="Désactiver protection")
 
-
-        ctk.CTkCheckBox(col1,
-                        text="✓ Modifier protection partage",
-                        variable=standard_vars['enable_password_sharing_config']).pack(anchor="w",
-                                                                                       padx=8,
-                                                                                       pady=(1, 1))
+        ctk.CTkCheckBox(
+            col1,
+            text="✓ Modifier protection partage",
+            variable=standard_vars['enable_password_sharing_config']).pack(
+                anchor="w", padx=8, pady=(1, 1))
 
         pw_choice_frame = ctk.CTkFrame(col1, fg_color="transparent")
         pw_choice_frame.pack(anchor="w", padx=8, pady=(1, 4))
@@ -2491,7 +3174,6 @@ Get-NetAdapter | ForEach-Object {
             width=180,
             height=22,
             font=ctk.CTkFont(size=10)).pack(anchor="w")
-
 
         # --- Clés de registre liées au partage réseau (repliables) ---
         reg_frame = ctk.CTkFrame(
@@ -2576,9 +3258,8 @@ Get-NetAdapter | ForEach-Object {
         serveur_vars['allow_veloce_firewall'] = tk.BooleanVar(value=False)
         ctk.CTkCheckBox(serv_frame,
                         text="✓ Veloce dans pare-feu",
-                        variable=serveur_vars['allow_veloce_firewall']).pack(anchor="w",
-                                                                             padx=8,
-                                                                             pady=1)
+                        variable=serveur_vars['allow_veloce_firewall']).pack(
+                            anchor="w", padx=8, pady=1)
 
         # Statut du dossier c:\veloce (affichage amélioré)
         veloce_exists, veloce_shared = self._check_veloce_share_status()
@@ -2607,11 +3288,12 @@ Get-NetAdapter | ForEach-Object {
                      font=ctk.CTkFont(size=9),
                      text_color=color).pack(anchor="w")
 
-        ctk.CTkCheckBox(serv_frame,
-                        text="✓ Partager c:\\veloce (Everyone - Contrôle total)",
-                        variable=serveur_vars['share']).pack(anchor="w",
-                                                             padx=8,
-                                                             pady=(1, 6))
+        ctk.CTkCheckBox(
+            serv_frame,
+            text="✓ Partager c:\\veloce (Everyone - Contrôle total)",
+            variable=serveur_vars['share']).pack(anchor="w",
+                                                 padx=8,
+                                                 pady=(1, 6))
 
         # Options
         opt_frame = ctk.CTkFrame(col2, fg_color="#2b2b2b")
@@ -2622,7 +3304,7 @@ Get-NetAdapter | ForEach-Object {
                      font=ctk.CTkFont(size=12,
                                       weight="bold")).pack(pady=(6, 4))
 
-        #ctk.CTkLabel(opt_frame, 
+        #ctk.CTkLabel(opt_frame,
         #             text=f"🖥️ Nom PC actuel : {current_pc_name}",
         #             font=ctk.CTkFont(size=10),
         #             text_color="#a5d6ff").pack(anchor="w", padx=8, pady=(2,4))
@@ -2659,6 +3341,13 @@ Get-NetAdapter | ForEach-Object {
         progress_bar.pack(pady=3)
         progress_bar.set(0)
 
+        # Variable pour contrôler le skip
+        skip_current_step = {'active': False}
+
+        # Frame pour les boutons (au-dessus du log)
+        btn_frame_col3 = ctk.CTkFrame(col3, fg_color="transparent")
+        btn_frame_col3.pack(fill="x", padx=6, pady=(4, 2))
+
         log_box = ctk.CTkTextbox(col3, width=250)
         log_box.pack(fill="both", expand=True, padx=6, pady=3)
 
@@ -2684,26 +3373,45 @@ Get-NetAdapter | ForEach-Object {
                             ("Désactivation notifications",
                              lambda: disable_windows_notifications(self.log)))
                     if standard_vars['user_admin'].get():
-                        steps.append(
-                            ("Création utilisateur 'admin'",
-                             lambda: [
-                                 add_windows_user("admin", "veloce123", True, True, self.log),
-                                 # Config verrouillage du compte pour admin
-                                 subprocess.run('net accounts /lockoutthreshold:0', shell=True),
-                                 subprocess.run('net accounts /lockoutduration:0', shell=True),
-                                 subprocess.run('net accounts /lockoutwindow:0', shell=True)
-                             ]))
+                        steps.append((
+                            "Création utilisateur 'admin'",
+                            lambda: [
+                                add_windows_user("admin", "veloce123", True,
+                                                 True, self.log),
+                                # Config verrouillage du compte pour admin
+                                subprocess.run(
+                                    'net accounts /lockoutthreshold:0',
+                                    shell=True),
+                                subprocess.run(
+                                    'net accounts /lockoutduration:0',
+                                    shell=True),
+                                subprocess.run('net accounts /lockoutwindow:0',
+                                               shell=True)
+                            ]))
 
                     if standard_vars['user_kpitech'].get():
-                        steps.append(
-                            ("Création utilisateur 'kpitech'",
-                             lambda: [
-                                 add_windows_user("kpitech", "Log1tech", True, True, self.log),
-                                 # Config verrouillage du compte pour kpitech
-                                 subprocess.run('net accounts /lockoutthreshold:0', shell=True),
-                                 subprocess.run('net accounts /lockoutduration:0', shell=True),
-                                 subprocess.run('net accounts /lockoutwindow:0', shell=True)
-                             ]))
+                        steps.append((
+                            "Création utilisateur 'kpitech'",
+                            lambda: [
+                                add_windows_user("kpitech", "Log1tech", True,
+                                                 True, self.log),
+                                # Config verrouillage du compte pour kpitech
+                                subprocess.run(
+                                    'net accounts /lockoutthreshold:0',
+                                    shell=True),
+                                subprocess.run(
+                                    'net accounts /lockoutduration:0',
+                                    shell=True),
+                                subprocess.run('net accounts /lockoutwindow:0',
+                                               shell=True)
+                            ]))
+
+                    # Option: Auto-logon admin avec veloce123
+                    if standard_vars['auto_logon_admin'].get():
+                        steps.append(("Auto-logon admin",
+                                      lambda: self._enable_autologon_for_user(
+                                          "admin", "veloce123", log_msg)))
+
                     if standard_vars['wallpaper'].get():
                         steps.append(
                             ("Application wallpaper KPI", lambda:
@@ -2713,39 +3421,44 @@ Get-NetAdapter | ForEach-Object {
 
                     # Option 1: Désactiver UAC
                     if standard_vars['disable_uac'].get():
-                        steps.append(
-                            ("Désactivation UAC", lambda: self._disable_uac(log_msg)))
-
+                        steps.append(("Désactivation UAC",
+                                      lambda: self._disable_uac(log_msg)))
 
                     # Option 3: Désactiver veille cartes réseau
                     if standard_vars['disable_network_sleep'].get():
                         steps.append(
-                            ("Désactivation veille réseau", lambda: self._disable_network_sleep(log_msg)))
+                            ("Désactivation veille réseau",
+                             lambda: self._disable_network_sleep(log_msg)))
 
                     # Option 3b: Mettre carte réseau en mode Privé
                     if standard_vars['network_private'].get():
                         steps.append(
-                            ("Carte réseau en mode Privé", lambda: self._set_network_private(log_msg)))
+                            ("Carte réseau en mode Privé",
+                             lambda: self._set_network_private(log_msg)))
 
                     # Option 4: Fuseau horaire + sync
                     if standard_vars['timezone_sync'].get():
                         steps.append(
-                            ("Fuseau horaire + sync", lambda: self._set_timezone_and_sync(log_msg)))
+                            ("Fuseau horaire + sync",
+                             lambda: self._set_timezone_and_sync(log_msg)))
 
                     # Option 5: Meilleures performances
                     if standard_vars['best_performance'].get():
                         steps.append(
-                            ("Meilleures performances", lambda: self._set_best_performance(log_msg)))
+                            ("Meilleures performances",
+                             lambda: self._set_best_performance(log_msg)))
 
                     # Option 6: Mode alimentation performance
                     if standard_vars['power_options'].get():
                         steps.append(
-                            ("Mode alimentation performance", lambda: self._set_power_performance(log_msg)))
+                            ("Mode alimentation performance",
+                             lambda: self._set_power_performance(log_msg)))
 
                     # Gestion partage protégé par mot de passe (Option 7)
                     # Vérifier si la checkbox est cochée
                     if standard_vars['enable_password_sharing_config'].get():
-                        pw_action = standard_vars['password_sharing_action'].get()
+                        pw_action = standard_vars[
+                            'password_sharing_action'].get()
                         if pw_action == "Activer protection":
                             steps.append(
                                 ("Activation partage protégé", lambda: self.
@@ -2759,19 +3472,38 @@ Get-NetAdapter | ForEach-Object {
                     if standard_vars['active_hours'].get():
                         start_h = standard_vars['active_hours_start'].get()
                         end_h = standard_vars['active_hours_end'].get()
-                        steps.append(
-                            ("Configuration heures actives", 
-                             lambda sh=start_h, eh=end_h: self._set_active_hours(log_msg, sh, eh)))
+                        steps.append(("Configuration heures actives",
+                                      lambda sh=start_h, eh=end_h: self.
+                                      _set_active_hours(log_msg, sh, eh)))
 
-                    # Option 9: Installation Ninite
-                    if standard_vars['install_ninite'].get():
+                    # Option 9: Installation logiciels (winget + choco fallback)
+                    # Format: (nom, winget_id, choco_id)
+                    apps_to_install = []
+                    if standard_vars['install_7zip'].get():
+                        apps_to_install.append(('7-Zip', '7zip.7zip', '7zip'))
+                    if standard_vars['install_chrome'].get():
+                        apps_to_install.append(('Chrome', 'Google.Chrome', 'googlechrome'))
+                    if standard_vars['install_anydesk'].get():
+                        apps_to_install.append(('AnyDesk', 'AnyDeskSoftwareGmbH.AnyDesk', 'anydesk'))
+                    if standard_vars['install_teamviewer'].get():
+                        apps_to_install.append(('TeamViewer', 'TeamViewer.TeamViewer', 'teamviewer'))
+                    if standard_vars['install_tightvnc'].get():
+                        apps_to_install.append(('TightVNC', 'GlavSoft.TightVNC', 'tightvnc'))
+                    if standard_vars['install_foxit'].get():
+                        apps_to_install.append(('Foxit Reader', 'Foxit.FoxitReader', 'foxitreader'))
+                    if standard_vars['install_notepadpp'].get():
+                        apps_to_install.append(('Notepad++', 'Notepad++.Notepad++', 'notepadplusplus'))
+
+                    if apps_to_install:
                         steps.append(
-                            ("Installation Ninite + config VNC", lambda: self._install_ninite(log_msg)))
+                            (f"Installation logiciels ({len(apps_to_install)})",
+                             lambda apps=apps_to_install, skip=skip_current_step:
+                             self._install_winget_apps(log_msg, apps, skip)))
 
                     # Option 10: Rétablir menu contextuel classique
                     if standard_vars['restore_context_menu'].get():
-                        steps.append(
-                            ("Rétablir menu contextuel classique", lambda: restore_context_menu(log_msg)))
+                        steps.append(("Rétablir menu contextuel classique",
+                                      lambda: restore_context_menu(log_msg)))
 
                     # Collecter les étapes Serveur
                     if serveur_vars['shortcuts'].get():
@@ -2786,7 +3518,8 @@ Get-NetAdapter | ForEach-Object {
                     # Option 2: Pare-feu Veloce (dans serveur_vars)
                     if serveur_vars['allow_veloce_firewall'].get():
                         steps.append(
-                            ("Configuration pare-feu Veloce", lambda: self._allow_veloce_firewall(log_msg)))
+                            ("Configuration pare-feu Veloce",
+                             lambda: self._allow_veloce_firewall(log_msg)))
 
                     if not steps:
                         log_msg("⚠️ Aucune étape sélectionnée")
@@ -2798,6 +3531,13 @@ Get-NetAdapter | ForEach-Object {
 
                     # Exécuter
                     for i, (name, action) in enumerate(steps, 1):
+                        # Vérifier si skip demandé
+                        if skip_current_step['active']:
+                            skip_current_step['active'] = False
+                            log_msg(f"⏭️ Étape {i}/{total} ignorée: {name}")
+                            progress_bar.set(i / total)
+                            continue
+
                         status_label_prog.configure(
                             text=f"▶ Étape {i}/{total}: {name}...")
                         log_msg(f"▶ Étape {i}/{total}: {name}...")
@@ -2839,17 +3579,31 @@ Get-NetAdapter | ForEach-Object {
 
             log_box.delete("1.0", "end")
             progress_bar.set(0)
+            skip_current_step['active'] = False
             threading.Thread(target=worker, daemon=True).start()
 
-        # Bouton démarrer
-        ctk.CTkButton(main_frame,
-                      text="🚀 Démarrer la configuration",
-                      width=350,
-                      height=40,
-                      font=ctk.CTkFont(size=13, weight="bold"),
+        def skip_step():
+            skip_current_step['active'] = True
+            status_label_prog.configure(text="⏭️ Skip demandé...")
+
+        # Boutons dans col3 (au-dessus du log)
+        ctk.CTkButton(btn_frame_col3,
+                      text="🚀 Démarrer",
+                      width=120,
+                      height=32,
+                      font=ctk.CTkFont(size=11, weight="bold"),
                       fg_color="#16a34a",
                       hover_color="#15803d",
-                      command=execute).pack(pady=(0, 80), side="top")
+                      command=execute).pack(side="left", padx=(0, 4))
+
+        ctk.CTkButton(btn_frame_col3,
+                      text="⏭️ Skip étape",
+                      width=100,
+                      height=32,
+                      font=ctk.CTkFont(size=11),
+                      fg_color="#f59e0b",
+                      hover_color="#d97706",
+                      command=skip_step).pack(side="left")
 
     def _create_serveur_shortcuts(self, log_fn):
         """Crée les raccourcis VELBO/VELSRV et copie VELSRV au démarrage"""
@@ -3426,7 +4180,8 @@ $Shortcut.Save()
 
         # FORCER le nom actuel du PC dans le champ immédiatement
         current_pc_name = os.environ.get("COMPUTERNAME", "")
-        if not self.pc_name_var.get() or self.pc_name_var.get() != current_pc_name:
+        if not self.pc_name_var.get() or self.pc_name_var.get(
+        ) != current_pc_name:
             self.pc_name_var.set(current_pc_name)
 
         pc_entry = ctk.CTkEntry(rename_frame, width=250)
@@ -3436,13 +4191,14 @@ $Shortcut.Save()
         # Synchroniser avec self.pc_name_var pour la suite
         def sync_pc_name(*args):
             self.pc_name_var.set(pc_entry.get())
+
         pc_entry.bind('<KeyRelease>', sync_pc_name)
 
         # Label avec le nom actuel
-       # ctk.CTkLabel(rename_frame, 
-       #              text=f"(Actuel: {current_pc_name})",
-       #              text_color="#9ca3af",
-       #              font=ctk.CTkFont(size=11)).pack(side="left", padx=5)
+        # ctk.CTkLabel(rename_frame,
+        #              text=f"(Actuel: {current_pc_name})",
+        #              text_color="#9ca3af",
+        #              font=ctk.CTkFont(size=11)).pack(side="left", padx=5)
 
         # Redémarrage
         ctk.CTkCheckBox(options_frame,
@@ -3510,25 +4266,31 @@ $Shortcut.Save()
                     steps.append((
                         "Création utilisateur 'admin'",
                         lambda: [
-                            add_windows_user("admin", "veloce123", True, True, self.log),
+                            add_windows_user("admin", "veloce123", True, True,
+                                             self.log),
                             # Appliquer verrouillage compte admin
-                            subprocess.run('net accounts /lockoutthreshold:0', shell=True),
-                            subprocess.run('net accounts /lockoutduration:0', shell=True),
-                            subprocess.run('net accounts /lockoutwindow:0', shell=True)
-                        ]
-                    ))
+                            subprocess.run('net accounts /lockoutthreshold:0',
+                                           shell=True),
+                            subprocess.run('net accounts /lockoutduration:0',
+                                           shell=True),
+                            subprocess.run('net accounts /lockoutwindow:0',
+                                           shell=True)
+                        ]))
 
                 if self._standard_steps_vars['user_kpitech'].get():
                     steps.append((
                         "Création utilisateur 'kpitech'",
                         lambda: [
-                            add_windows_user("kpitech", "Log1tech", True, True, self.log),
+                            add_windows_user("kpitech", "Log1tech", True, True,
+                                             self.log),
                             # Appliquer verrouillage compte kpitech
-                            subprocess.run('net accounts /lockoutthreshold:0', shell=True),
-                            subprocess.run('net accounts /lockoutduration:0', shell=True),
-                            subprocess.run('net accounts /lockoutwindow:0', shell=True)
-                        ]
-                    ))
+                            subprocess.run('net accounts /lockoutthreshold:0',
+                                           shell=True),
+                            subprocess.run('net accounts /lockoutduration:0',
+                                           shell=True),
+                            subprocess.run('net accounts /lockoutwindow:0',
+                                           shell=True)
+                        ]))
                 if self._standard_steps_vars['wallpaper'].get():
                     steps.append(
                         ("Application wallpaper KPI",
@@ -3777,22 +4539,32 @@ $Shortcut.Save()
                      lambda: tweak_taskbar(self.log)),
                     ("Désactivation notifications",
                      lambda: disable_windows_notifications(self.log)),
-                    ("Création utilisateur 'admin'",
-                     lambda: [
-                         add_windows_user("admin", "veloce123", True, True, self.log),
-                         # Appliquer verrouillage compte admin
-                         subprocess.run('net accounts /lockoutthreshold:0', shell=True),
-                         subprocess.run('net accounts /lockoutduration:0', shell=True),
-                         subprocess.run('net accounts /lockoutwindow:0', shell=True)
-                     ]),
-                    ("Création utilisateur 'kpitech'",
-                     lambda: [
-                         add_windows_user("kpitech", "Log1tech", True, True, self.log),
-                         # Appliquer verrouillage compte kpitech
-                         subprocess.run('net accounts /lockoutthreshold:0', shell=True),
-                         subprocess.run('net accounts /lockoutduration:0', shell=True),
-                         subprocess.run('net accounts /lockoutwindow:0', shell=True)
-                     ]),
+                    (
+                        "Création utilisateur 'admin'",
+                        lambda: [
+                            add_windows_user("admin", "veloce123", True, True,
+                                             self.log),
+                            # Appliquer verrouillage compte admin
+                            subprocess.run('net accounts /lockoutthreshold:0',
+                                           shell=True),
+                            subprocess.run('net accounts /lockoutduration:0',
+                                           shell=True),
+                            subprocess.run('net accounts /lockoutwindow:0',
+                                           shell=True)
+                        ]),
+                    (
+                        "Création utilisateur 'kpitech'",
+                        lambda: [
+                            add_windows_user("kpitech", "Log1tech", True, True,
+                                             self.log),
+                            # Appliquer verrouillage compte kpitech
+                            subprocess.run('net accounts /lockoutthreshold:0',
+                                           shell=True),
+                            subprocess.run('net accounts /lockoutduration:0',
+                                           shell=True),
+                            subprocess.run('net accounts /lockoutwindow:0',
+                                           shell=True)
+                        ]),
                     ("Application wallpaper KPI",
                      lambda: apply_wallpaper("wallpaper-kpi.jpg", self.log))
                 ]
@@ -4161,12 +4933,11 @@ $Shortcut.Save()
                      font=ctk.CTkFont(size=16,
                                       weight="bold")).pack(anchor="w",
                                                            pady=(0, 10))
-                                                           
+
         ctk.CTkLabel(f,
-                     text="Experimental peu ne pas fonctionner comme prevu",                                                       
+                     text="Experimental peu ne pas fonctionner comme prevu",
                      font=ctk.CTkFont(size=15, weight="bold"),
-                     text_color="#ef4444").pack(anchor="w", pady=(0, 15))                                                           
-                                                           
+                     text_color="#ef4444").pack(anchor="w", pady=(0, 15))
 
         # Variables pour les champs
         if not hasattr(self, 'psexec_host_var'):
@@ -4381,22 +5152,25 @@ $Shortcut.Save()
         f.pack(fill="both", expand=True, padx=10, pady=10)
 
         # Titre
-        ctk.CTkLabel(f,
-                     text="Propriétés de : Protocole Internet version 4 (TCP/IPv4)",
-                     font=ctk.CTkFont(size=15,
-                                      weight="bold")).pack(anchor="w",
+        ctk.CTkLabel(
+            f,
+            text="Propriétés de : Protocole Internet version 4 (TCP/IPv4)",
+            font=ctk.CTkFont(size=15, weight="bold")).pack(anchor="w",
                                                            pady=(0, 15))
-                                                           
-        ctk.CTkLabel(f,
-                     text="Fonctionne pas parfaitement, appuyez sur ouvrir les proprietes pour etre 100% certain",
-                     font=ctk.CTkFont(size=15, weight="bold"),
-                     text_color="#ef4444").pack(anchor="w", pady=(0, 15))                                                         
 
-        ctk.CTkLabel(f,
-                     text="Si l'emplacement a un mikrotik, laissez la configuration en DHCP et utilisez Winbox pour reserver l'adresse voulu",
-                     font=ctk.CTkFont(size=15, weight="bold"),
-                     text_color="#eab308").pack(anchor="w", pady=(0, 15))
+        ctk.CTkLabel(
+            f,
+            text=
+            "Fonctionne pas parfaitement, appuyez sur ouvrir les proprietes pour etre 100% certain",
+            font=ctk.CTkFont(size=15, weight="bold"),
+            text_color="#ef4444").pack(anchor="w", pady=(0, 15))
 
+        ctk.CTkLabel(
+            f,
+            text=
+            "Si l'emplacement a un mikrotik, laissez la configuration en DHCP et utilisez Winbox pour reserver l'adresse voulu",
+            font=ctk.CTkFont(size=15, weight="bold"),
+            text_color="#eab308").pack(anchor="w", pady=(0, 15))
 
         # Variables
         if not hasattr(self, '_net_iface_var'):
@@ -4406,16 +5180,21 @@ $Shortcut.Save()
             self._net_gw_var = tk.StringVar(value="")
             self._net_dns1_var = tk.StringVar(value="")
             self._net_dns2_var = tk.StringVar(value="")
-            self._net_ip_mode_var = tk.StringVar(value="dhcp")  # dhcp ou static
-            self._net_dns_mode_var = tk.StringVar(value="dhcp")  # dhcp ou static
+            self._net_ip_mode_var = tk.StringVar(
+                value="dhcp")  # dhcp ou static
+            self._net_dns_mode_var = tk.StringVar(
+                value="dhcp")  # dhcp ou static
             self._net_ifaces_info = {}
 
         # ========== Sélection Interface ==========
         iface_frame = ctk.CTkFrame(f, fg_color="#2b2b2b")
         iface_frame.pack(fill="x", pady=(0, 15))
 
-        ctk.CTkLabel(iface_frame, text="🌐 Carte réseau :", 
-                     font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=15, pady=(10, 5))
+        ctk.CTkLabel(iface_frame,
+                     text="🌐 Carte réseau :",
+                     font=ctk.CTkFont(weight="bold")).pack(anchor="w",
+                                                           padx=15,
+                                                           pady=(10, 5))
 
         inner_frame = ctk.CTkFrame(iface_frame, fg_color="transparent")
         inner_frame.pack(fill="x", padx=15, pady=(0, 10))
@@ -4431,39 +5210,45 @@ $Shortcut.Save()
             text="🔄 Recharger",
             width=100,
             command=lambda: threading.Thread(target=self._detect_interfaces,
-                                             daemon=True).start()).pack(side="left", padx=(0, 8))
+                                             daemon=True).start()).pack(
+                                                 side="left", padx=(0, 8))
 
         # Bouton pour ouvrir directement les propriétés IPv4 Windows
-        ctk.CTkButton(
-            inner_frame,
-            text="🔧 Ouvrir propriétés IPv4 Windows",
-            width=220,
-            fg_color="#10b981",
-            hover_color="#059669",
-            command=self._open_ipv4_properties).pack(side="left")
+        ctk.CTkButton(inner_frame,
+                      text="🔧 Ouvrir propriétés IPv4 Windows",
+                      width=220,
+                      fg_color="#10b981",
+                      hover_color="#059669",
+                      command=self._open_ipv4_properties).pack(side="left")
 
         # ========== CONFIGURATION IP ==========
         ip_section = ctk.CTkFrame(f, fg_color="#2b2b2b")
         ip_section.pack(fill="x", pady=(0, 12))
 
-        ctk.CTkLabel(ip_section, 
-                     text="Les paramètres IP peuvent être déterminés automatiquement si votre réseau le permet.",
-                     text_color="#9ca3af",
-                     font=ctk.CTkFont(size=11)).pack(anchor="w", padx=15, pady=(12, 8))
+        ctk.CTkLabel(
+            ip_section,
+            text=
+            "Les paramètres IP peuvent être déterminés automatiquement si votre réseau le permet.",
+            text_color="#9ca3af",
+            font=ctk.CTkFont(size=11)).pack(anchor="w", padx=15, pady=(12, 8))
 
         # Radio DHCP IP
         ctk.CTkRadioButton(ip_section,
                            text="○ Obtenir automatiquement une adresse IP",
                            variable=self._net_ip_mode_var,
                            value="dhcp",
-                           font=ctk.CTkFont(size=12)).pack(anchor="w", padx=15, pady=4)
+                           font=ctk.CTkFont(size=12)).pack(anchor="w",
+                                                           padx=15,
+                                                           pady=4)
 
         # Radio IP Manuelle
         ctk.CTkRadioButton(ip_section,
                            text="● Utiliser l'adresse IP suivante :",
                            variable=self._net_ip_mode_var,
                            value="static",
-                           font=ctk.CTkFont(size=12)).pack(anchor="w", padx=15, pady=(8, 8))
+                           font=ctk.CTkFont(size=12)).pack(anchor="w",
+                                                           padx=15,
+                                                           pady=(8, 8))
 
         # Champs IP
         fields_frame = ctk.CTkFrame(ip_section, fg_color="transparent")
@@ -4478,34 +5263,45 @@ $Shortcut.Save()
             entry.pack(side="left", padx=5)
             return entry
 
-        self._net_ip_entry = create_ip_field(fields_frame, "Adresse IP :", self._net_ip_var)
-        self._net_mask_entry = create_ip_field(fields_frame, "Masque de sous-réseau :", self._net_mask_var)
-        self._net_gw_entry = create_ip_field(fields_frame, "Passerelle par défaut :", self._net_gw_var)
+        self._net_ip_entry = create_ip_field(fields_frame, "Adresse IP :",
+                                             self._net_ip_var)
+        self._net_mask_entry = create_ip_field(fields_frame,
+                                               "Masque de sous-réseau :",
+                                               self._net_mask_var)
+        self._net_gw_entry = create_ip_field(fields_frame,
+                                             "Passerelle par défaut :",
+                                             self._net_gw_var)
 
         # ========== CONFIGURATION DNS ==========
         dns_section = ctk.CTkFrame(f, fg_color="#2b2b2b")
         dns_section.pack(fill="x", pady=(0, 15))
 
         # Radio DHCP DNS
-        ctk.CTkRadioButton(dns_section,
-                           text="○ Obtenir automatiquement les adresses des serveurs DNS",
-                           variable=self._net_dns_mode_var,
-                           value="dhcp",
-                           font=ctk.CTkFont(size=12)).pack(anchor="w", padx=15, pady=(12, 4))
+        ctk.CTkRadioButton(
+            dns_section,
+            text="○ Obtenir automatiquement les adresses des serveurs DNS",
+            variable=self._net_dns_mode_var,
+            value="dhcp",
+            font=ctk.CTkFont(size=12)).pack(anchor="w", padx=15, pady=(12, 4))
 
         # Radio DNS Manuel
-        ctk.CTkRadioButton(dns_section,
-                           text="● Utiliser l'adresse de serveur DNS suivante :",
-                           variable=self._net_dns_mode_var,
-                           value="static",
-                           font=ctk.CTkFont(size=12)).pack(anchor="w", padx=15, pady=(8, 8))
+        ctk.CTkRadioButton(
+            dns_section,
+            text="● Utiliser l'adresse de serveur DNS suivante :",
+            variable=self._net_dns_mode_var,
+            value="static",
+            font=ctk.CTkFont(size=12)).pack(anchor="w", padx=15, pady=(8, 8))
 
         # Champs DNS
         dns_fields_frame = ctk.CTkFrame(dns_section, fg_color="transparent")
         dns_fields_frame.pack(fill="x", padx=40, pady=(0, 12))
 
-        self._net_dns1_entry = create_ip_field(dns_fields_frame, "Serveur DNS préféré :", self._net_dns1_var)
-        self._net_dns2_entry = create_ip_field(dns_fields_frame, "Serveur DNS auxiliaire :", self._net_dns2_var)
+        self._net_dns1_entry = create_ip_field(dns_fields_frame,
+                                               "Serveur DNS préféré :",
+                                               self._net_dns1_var)
+        self._net_dns2_entry = create_ip_field(dns_fields_frame,
+                                               "Serveur DNS auxiliaire :",
+                                               self._net_dns2_var)
 
         # ========== BOUTON APPLIQUER ==========
         ctk.CTkButton(
@@ -4517,16 +5313,22 @@ $Shortcut.Save()
             hover_color="#2058c9",
             font=ctk.CTkFont(size=13, weight="bold"),
             command=lambda: threading.Thread(target=self._apply_network_config,
-                                             daemon=True).start()).pack(pady=(5, 10))
+                                             daemon=True).start()).pack(
+                                                 pady=(5, 10))
 
         # Activer/Désactiver champs selon mode
         def toggle_ip_fields(*args):
-            state = "normal" if self._net_ip_mode_var.get() == "static" else "disabled"
-            for entry in [self._net_ip_entry, self._net_mask_entry, self._net_gw_entry]:
+            state = "normal" if self._net_ip_mode_var.get(
+            ) == "static" else "disabled"
+            for entry in [
+                    self._net_ip_entry, self._net_mask_entry,
+                    self._net_gw_entry
+            ]:
                 entry.configure(state=state)
 
         def toggle_dns_fields(*args):
-            state = "normal" if self._net_dns_mode_var.get() == "static" else "disabled"
+            state = "normal" if self._net_dns_mode_var.get(
+            ) == "static" else "disabled"
             for entry in [self._net_dns1_entry, self._net_dns2_entry]:
                 entry.configure(state=state)
 
@@ -4558,16 +5360,21 @@ $Shortcut.Save()
                 self._net_ip_mode_var.set("dhcp")
 
             # DNS auto si vide ET IP est en DHCP
-            dns_is_auto = (not info.get("dns1", "") and not info.get("dns2", "")) and ip_is_dhcp
+            dns_is_auto = (not info.get("dns1", "")
+                           and not info.get("dns2", "")) and ip_is_dhcp
             if dns_is_auto:
                 self._net_dns_mode_var.set("dhcp")
 
             # Logger les infos pour debug
             self.log(f"📊 Carte: {iface_name}")
-            self.log(f"   IP: {info.get('ip', 'N/A')} - Mode: {'DHCP' if ip_is_dhcp else 'Static'}")
+            self.log(
+                f"   IP: {info.get('ip', 'N/A')} - Mode: {'DHCP' if ip_is_dhcp else 'Static'}"
+            )
             self.log(f"   Masque: {info.get('mask', 'N/A')}")
             self.log(f"   Passerelle: {info.get('gw', 'Aucune')}")
-            self.log(f"   DNS: {info.get('dns1', 'N/A')} / {info.get('dns2', 'N/A')}")
+            self.log(
+                f"   DNS: {info.get('dns1', 'N/A')} / {info.get('dns2', 'N/A')}"
+            )
             self.log("")
 
         self._iface_menu.configure(command=lambda v: on_iface_change(v))
@@ -4685,11 +5492,11 @@ $Shortcut.Save()
             # Subnet Mask - cherche plusieurs patterns
             if any(x in line_lower for x in
                    ["masque de sous", "subnet mask", "subnet prefix"]):
-                # Format direct 255.255.255.0
-                m = re.search(r":\s*([\d\.]+)", line)
+                # Priorité 1 : format netsh "(mask 255.255.255.0)"
+                m = re.search(r'\(mask\s+([\d\.]+)\)', line, re.IGNORECASE)
                 if m:
                     info["mask"] = m.group(1)
-                # Format CIDR /24
+                # Priorité 2 : format CIDR /24
                 elif "/" in line:
                     m = re.search(r"/(\d+)", line)
                     if m:
@@ -4700,23 +5507,31 @@ $Shortcut.Save()
                             for i in range(0, 32, 8)
                         ]
                         info["mask"] = '.'.join(octets)
-                # Ligne suivante
-                elif i + 1 < len(lines):
-                    m = re.search(r"([\d\.]+)", lines[i + 1])
+                # Priorité 3 : format direct 255.255.255.0 après ":"
+                else:
+                    m = re.search(r":\s*(255[\d\.]+)", line)
                     if m:
                         info["mask"] = m.group(1)
+                    # Ligne suivante si rien trouvé
+                    elif i + 1 < len(lines):
+                        m = re.search(r"(255[\d\.]+)", lines[i + 1])
+                        if m:
+                            info["mask"] = m.group(1)
 
             # Gateway - cherche plusieurs patterns
-            if any(x in line_lower
-                   for x in ["passerelle", "gateway", "default gateway"]):
+            # Exclure "gatewaymetric" qui contient "gateway" mais n'est pas la passerelle
+            if (any(x in line_lower for x in
+                    ["passerelle par défaut", "passerelle par defaut",
+                     "defaultgateway", "default gateway"])
+                    and "metric" not in line_lower):
                 # Sur la même ligne
                 m = re.search(r":\s*([\d\.]+)", line)
-                if m and m.group(1) not in ["0.0.0.0", ""]:
+                if m and m.group(1) not in ["0.0.0.0", "0", ""]:
                     info["gateway"] = m.group(1)
-                # Ligne suivante
+                # Ligne suivante (valeur sur la ligne d'après)
                 elif i + 1 < len(lines):
                     m = re.search(r"([\d\.]+)", lines[i + 1])
-                    if m and m.group(1) not in ["0.0.0.0", ""]:
+                    if m and m.group(1) not in ["0.0.0.0", "0", ""]:
                         info["gateway"] = m.group(1)
 
             # DNS Servers
@@ -4760,8 +5575,11 @@ $Shortcut.Save()
             self.log("📋 Instructions rapides:")
             self.log(f"   1. Chercher la carte: {iface_name}")
             self.log("   2. Clic DROIT sur cette carte → Propriétés")
-            self.log("   3. Double-clic sur: 'Protocole Internet version 4 (TCP/IPv4)'")
-            self.log("   4. Configurer l'adresse IP, masque, passerelle et DNS")
+            self.log(
+                "   3. Double-clic sur: 'Protocole Internet version 4 (TCP/IPv4)'"
+            )
+            self.log(
+                "   4. Configurer l'adresse IP, masque, passerelle et DNS")
             self.log("   5. Cliquer 'OK' pour enregistrer")
             self.log("")
 
@@ -4804,9 +5622,9 @@ $Shortcut.Save()
             # ===== CONFIGURATION IP =====
             if ip_mode == "dhcp":
                 subprocess.run(
-                    f'netsh interface ip set address name="{iface}" source=dhcp',
-                    shell=True,
-                    check=True)
+                    f'netsh interface ipv4 set address name="{iface}" source=dhcp',
+                    shell=True, capture_output=True,
+                    cwd=os.environ.get('TEMP', 'C:\\Windows\\Temp'))
                 self.log("✅ Adresse IP configurée en DHCP (automatique)")
             else:
                 # IP statique
@@ -4818,23 +5636,38 @@ $Shortcut.Save()
                     self.log("❌ IP et masque requis pour IP statique")
                     return
 
-                # netsh nécessite un argument gateway même s'il est vide (utiliser "none")
-                gateway_arg = gw if gw else "none"
-                cmd = f'netsh interface ip set address name="{iface}" static {ip} {mask} {gateway_arg}'
+                # Valider que la passerelle n'est pas "0" ou vide
+                gw_clean = gw if gw and gw not in ["0", "0.0.0.0"] else ""
 
-                subprocess.run(cmd, shell=True, check=True)
-                self.log(f"✅ IP statique configurée: {ip}/{mask}")
-                if gw:
-                    self.log(f"✅ Passerelle: {gw}")
+                # Construire la commande netsh (sans passerelle si vide)
+                if gw_clean:
+                    cmd = (f'netsh interface ipv4 set address name="{iface}" '
+                           f'static {ip} {mask} {gw_clean}')
                 else:
-                    self.log("✅ Passerelle: aucune")
+                    cmd = (f'netsh interface ipv4 set address name="{iface}" '
+                           f'static {ip} {mask}')
+
+                result = subprocess.run(cmd, shell=True, capture_output=True,
+                                        text=True, cwd=os.environ.get('TEMP', 'C:\\Windows\\Temp'))
+                if result.returncode == 0:
+                    self.log(f"✅ IP statique configurée: {ip}/{mask}")
+                    if gw_clean:
+                        self.log(f"✅ Passerelle: {gw_clean}")
+                    else:
+                        self.log("✅ Passerelle: aucune")
+                else:
+                    err = result.stderr.strip() or result.stdout.strip()
+                    self.log(f"❌ Erreur configuration IP (code {result.returncode})")
+                    if err:
+                        self.log(f"   {err[:200]}")
+                    return
 
             # ===== CONFIGURATION DNS =====
+            local_cwd = os.environ.get('TEMP', 'C:\\Windows\\Temp')
             if dns_mode == "dhcp":
                 subprocess.run(
-                    f'netsh interface ip set dns name="{iface}" source=dhcp',
-                    shell=True,
-                    check=True)
+                    f'netsh interface ipv4 set dns name="{iface}" source=dhcp',
+                    shell=True, capture_output=True, cwd=local_cwd)
                 self.log("✅ DNS configuré en automatique")
             else:
                 # DNS manuel
@@ -4842,18 +5675,22 @@ $Shortcut.Save()
                 dns2 = self._net_dns2_var.get().strip()
 
                 if dns1:
-                    subprocess.run(
-                        f'netsh interface ip set dns name="{iface}" static {dns1}',
-                        shell=True,
-                        check=True)
-                    self.log(f"✅ DNS primaire: {dns1}")
+                    r = subprocess.run(
+                        f'netsh interface ipv4 set dns name="{iface}" static {dns1}',
+                        shell=True, capture_output=True, text=True, cwd=local_cwd)
+                    if r.returncode == 0:
+                        self.log(f"✅ DNS primaire: {dns1}")
+                    else:
+                        self.log(f"⚠️ DNS primaire non appliqué (code {r.returncode})")
 
                 if dns2:
-                    subprocess.run(
-                        f'netsh interface ip add dns name="{iface}" {dns2}',
-                        shell=True,
-                        check=True)
-                    self.log(f"✅ DNS secondaire: {dns2}")
+                    r = subprocess.run(
+                        f'netsh interface ipv4 add dns name="{iface}" {dns2} index=2',
+                        shell=True, capture_output=True, text=True, cwd=local_cwd)
+                    if r.returncode == 0:
+                        self.log(f"✅ DNS secondaire: {dns2}")
+                    else:
+                        self.log(f"⚠️ DNS secondaire non appliqué (code {r.returncode})")
 
             time.sleep(1)
             self.log("🔄 Actualisation des informations...")
@@ -4876,52 +5713,21 @@ $Shortcut.Save()
                 if update_available:
                     version_text += " 🔴 Mise à jour disponible!"
 
-                self.after(0, lambda: self.version_label.configure(
-                    text=version_text,
-                    text_color="#ef4444" if update_available else None))
+                self.after(
+                    0, lambda: self.version_label.configure(
+                        text=version_text,
+                        text_color="#ef4444" if update_available else None))
 
                 if update_available:
-                    self.after(0, lambda: self.log(
-                        f"🔔 Nouvelle version disponible: {remote_ver} (installée: {local_ver})"))
-                    self.after(0, lambda: self.log(
-                        "   Cliquez sur '🔄 Vérifier mises à jour' pour télécharger"))
+                    self.after(
+                        0, lambda: self.
+                        log(f"🔔 Nouvelle version disponible: {remote_ver} (installée: {local_ver})"
+                            ))
 
-                    def ask_download():
-                        from tkinter import Toplevel, Label, ttk, messagebox
-
-                        answer = messagebox.askyesno(
-                            "Nouvelle version disponible",
-                            f"Une nouvelle version est disponible:\n\n"
-                            f"Pour voir les nouvelles fonctionnalités, allez dans Aide → Release Notes :\n\n"
-                            f"Version actuelle: {local_ver}\n"
-                            f"Nouvelle version: {remote_ver}\n\n"
-                            "Voulez-vous la télécharger et l’installer maintenant ?"
-                        )
-                        if answer:
-                            # Fenêtre de téléchargement avec barre de progression
-                            progress_win = Toplevel(self)
-                            progress_win.title("Téléchargement de la mise à jour")
-                            progress_label = Label(progress_win, text="Téléchargement en cours...")
-                            progress_label.pack(padx=10, pady=5)
-                            progress_bar = ttk.Progressbar(progress_win, orient="horizontal", length=300, mode="determinate")
-                            progress_bar.pack(padx=10, pady=10)
-
-                            def progress_callback(downloaded, total):
-                                progress_bar["maximum"] = total
-                                progress_bar["value"] = downloaded
-                                progress_win.update_idletasks()
-
-                            def download_and_install():
-                                temp_file = download_update(progress_callback)
-                                progress_win.destroy()
-                                if temp_file:
-                                    install_update(temp_file)
-                                else:
-                                    messagebox.showerror("Erreur", "Le téléchargement de la mise à jour a échoué.")
-
-                            threading.Thread(target=download_and_install, daemon=True).start()
-
-                    self.after(0, ask_download)
+                    # Afficher la même fenêtre de mise à jour que la vérification manuelle
+                    self.after(0,
+                               lambda lv=local_ver, rv=remote_ver: self.
+                               _show_update_dialog(lv, rv))
 
         except Exception as e:
             print(f"Erreur vérification auto: {e}")
@@ -4935,24 +5741,34 @@ $Shortcut.Save()
                 update_available, local_ver, remote_ver = check_for_updates()
 
                 if not remote_ver:
-                    self.after(0, lambda: self.log(
-                        "❌ Impossible de contacter le serveur de mises à jour"))
-                    self.after(0, lambda: messagebox.showerror(
-                        "Erreur",
-                        "Impossible de vérifier les mises à jour.\n"
-                        "Vérifiez votre connexion Internet."))
+                    self.after(
+                        0, lambda: self.
+                        log("❌ Impossible de contacter le serveur de mises à jour"
+                            ))
+                    self.after(
+                        0, lambda: messagebox.showerror(
+                            "Erreur",
+                            "Impossible de vérifier les mises à jour.\n"
+                            "Vérifiez votre connexion Internet."))
                     return
 
                 if update_available:
-                    self.after(0, lambda: self.log(
-                        f"✅ Mise à jour disponible: v{remote_ver} (actuelle: v{local_ver})"))
-                    self.after(0, lambda: self._show_update_dialog(local_ver, remote_ver))
+                    self.after(
+                        0, lambda: self.
+                        log(f"✅ Mise à jour disponible: v{remote_ver} (actuelle: v{local_ver})"
+                            ))
+                    self.after(
+                        0, lambda: self._show_update_dialog(
+                            local_ver, remote_ver))
                 else:
-                    self.after(0, lambda: self.log(
-                        f"✅ Vous avez la dernière version: v{local_ver}"))
-                    self.after(0, lambda: messagebox.showinfo(
-                        "Aucune mise à jour",
-                        f"Vous utilisez déjà la dernière version:\nVersion {local_ver}"))
+                    self.after(
+                        0, lambda: self.log(
+                            f"✅ Vous avez la dernière version: v{local_ver}"))
+                    self.after(
+                        0, lambda: messagebox.showinfo(
+                            "Aucune mise à jour",
+                            f"Vous utilisez déjà la dernière version:\nVersion {local_ver}"
+                        ))
 
             except Exception as e:
                 self.after(0, lambda: self.log(f"❌ Erreur: {e}"))
@@ -4991,8 +5807,7 @@ $Shortcut.Save()
         main_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
         # Icône de mise à jour
-        ctk.CTkLabel(main_frame,
-                     text="🔄",
+        ctk.CTkLabel(main_frame, text="🔄",
                      font=ctk.CTkFont(size=48)).pack(pady=(10, 5))
 
         # Titre
@@ -5017,6 +5832,7 @@ $Shortcut.Save()
         # Charger notesversion
         notes_text = ""
         try:
+            base_path = get_base_path()
             config_path = os.path.join(base_path, "update_config.txt")
             config = {}
             with open(config_path, "r", encoding="utf-8") as f:
@@ -5042,10 +5858,14 @@ $Shortcut.Save()
                       text="✅ Télécharger et installer",
                       width=200,
                       height=35,
-                      command=lambda: [dialog.destroy(), self._download_and_install_update()],
+                      command=lambda:
+                      [dialog.destroy(),
+                       self._download_and_install_update()],
                       fg_color="#16a34a",
                       hover_color="#15803d",
-                      font=ctk.CTkFont(size=13, weight="bold")).pack(side="left", padx=5)
+                      font=ctk.CTkFont(size=13,
+                                       weight="bold")).pack(side="left",
+                                                            padx=5)
 
         ctk.CTkButton(btn_frame,
                       text="❌ Plus tard",
@@ -5081,7 +5901,12 @@ $Shortcut.Save()
             scrollbar.pack(side="right", fill="y")
 
             # Texte défilable
-            text_widget = ctk.CTkTextbox(frame, wrap="word", yscrollcommand=scrollbar.set, font=ctk.CTkFont(size=12), text_color="#fbbf24", fg_color="#1e1e1e")
+            text_widget = ctk.CTkTextbox(frame,
+                                         wrap="word",
+                                         yscrollcommand=scrollbar.set,
+                                         font=ctk.CTkFont(size=12),
+                                         text_color="#fbbf24",
+                                         fg_color="#1e1e1e")
             text_widget.pack(fill="both", expand=True, padx=5, pady=5)
 
             # Lier la scrollbar au texte
@@ -5092,16 +5917,16 @@ $Shortcut.Save()
             text_widget.configure(state="disabled")  # Empêche la modification
 
             # Bouton pour fermer
-            ctk.CTkButton(frame, text="Fermer", command=notes_window.destroy).pack(pady=(5, 10))
+            ctk.CTkButton(frame, text="Fermer",
+                          command=notes_window.destroy).pack(pady=(5, 10))
 
             # Désactiver le bouton principal après clic
             show_button.configure(state="disabled")
 
-        show_button = ctk.CTkButton(version_frame, text="Afficher nouveautés", command=show_notes)
+        show_button = ctk.CTkButton(version_frame,
+                                    text="Afficher nouveautés",
+                                    command=show_notes)
         show_button.pack(pady=(5, 5))
-
-
-
 
     def _download_and_install_update(self):
         """Télécharge et installe la mise à jour"""
@@ -5159,8 +5984,11 @@ $Shortcut.Save()
 
                 dl_mb = downloaded / (1024 * 1024)
                 total_mb = total / (1024 * 1024)
-                size_label.configure(text=f"{dl_mb:.1f} MB / {total_mb:.1f} MB")
-                self.log(f"  Téléchargé: {dl_mb:.1f} MB / {total_mb:.1f} MB ({percent*100:.0f}%)")
+                size_label.configure(
+                    text=f"{dl_mb:.1f} MB / {total_mb:.1f} MB")
+                self.log(
+                    f"  Téléchargé: {dl_mb:.1f} MB / {total_mb:.1f} MB ({percent*100:.0f}%)"
+                )
 
         def worker():
             try:
@@ -5169,28 +5997,36 @@ $Shortcut.Save()
 
                 if not update_file:
                     self.after(0, lambda: progress_dialog.destroy())
-                    self.after(0, lambda: self.log("❌ Échec du téléchargement"))
-                    self.after(0, lambda: messagebox.showerror(
-                        "Erreur",
-                        "Le téléchargement a échoué.\nVeuillez réessayer."))
+                    self.after(0,
+                               lambda: self.log("❌ Échec du téléchargement"))
+                    self.after(
+                        0, lambda: messagebox.showerror(
+                            "Erreur",
+                            "Le téléchargement a échoué.\nVeuillez réessayer.")
+                    )
                     return
 
-                self.after(0, lambda: status_label.configure(
-                    text="✅ Téléchargement terminé !"))
+                self.after(
+                    0, lambda: status_label.configure(
+                        text="✅ Téléchargement terminé !"))
                 self.after(0, lambda: self.log("✅ Téléchargement terminé"))
 
                 time.sleep(1)
 
                 # Installation
-                self.after(0, lambda: status_label.configure(
-                    text="Installation en cours..."))
-                self.after(0, lambda: self.log("▶ Lancement de l'installation..."))
+                self.after(
+                    0, lambda: status_label.configure(
+                        text="Installation en cours..."))
+                self.after(
+                    0, lambda: self.log("▶ Lancement de l'installation..."))
 
                 time.sleep(1)
 
                 if install_update(update_file):
                     self.after(0, lambda: self.log("✅ Mise à jour lancée"))
-                    self.after(0, lambda: self.log("⚠️  L'application va redémarrer..."))
+                    self.after(
+                        0,
+                        lambda: self.log("⚠️  L'application va redémarrer..."))
                     self.after(0, lambda: progress_dialog.destroy())
 
                     # Fermer IMMÉDIATEMENT l'application
@@ -5199,10 +6035,13 @@ $Shortcut.Save()
                     sys.exit(0)
                 else:
                     self.after(0, lambda: progress_dialog.destroy())
-                    self.after(0, lambda: self.log("❌ Échec de l'installation"))
-                    self.after(0, lambda: messagebox.showerror(
-                        "Erreur",
-                        "L'installation a échoué.\nVeuillez installer manuellement."))
+                    self.after(0,
+                               lambda: self.log("❌ Échec de l'installation"))
+                    self.after(
+                        0, lambda: messagebox.showerror(
+                            "Erreur",
+                            "L'installation a échoué.\nVeuillez installer manuellement."
+                        ))
 
             except Exception as e:
                 self.after(0, lambda: progress_dialog.destroy())

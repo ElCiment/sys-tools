@@ -15,7 +15,10 @@ class PasswordDialog(ctk.CTkToplevel):
         super().__init__(parent)
         
         self.title(title)
-        self.correct_password = correct_password
+        if isinstance(correct_password, list):
+            self.correct_passwords = correct_password
+        else:
+            self.correct_passwords = [correct_password]
         self.result = None
       
         
@@ -108,7 +111,7 @@ class PasswordDialog(ctk.CTkToplevel):
     def on_ok(self):
         """Vérifie le mot de passe"""
         entered = self.password_entry.get()
-        if entered == self.correct_password:
+        if entered in self.correct_passwords:
             self.result = entered
             self.destroy()
         else:
