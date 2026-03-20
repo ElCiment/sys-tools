@@ -2,8 +2,7 @@
 
 Interface d'administration Windows — dark mode — nécessite les droits administrateur.
 
-**Mot de passe :** `Log1tech` ou `Axios1694`
-**Lancement :** `python main.py` ou double-clic sur `Sys-Tools.exe`
+
 
 ---
 
